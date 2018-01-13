@@ -1,19 +1,34 @@
-function convertInputFormat(arrayString)
+function convertInputFormat(selectedSet,arrayString)
 {
     arrayString = arrayString.replace(/(\r\n|\n|\r)/gm," ");
-    arrayString = arrayString.replace(/\s+/g, '');
-    arrayString = arrayString.replace(/,/g, '');
-    arrayString = arrayString.replace(/[0-9]/g, '');
-    arrayString.trim();
     arrayString = arrayString.toUpperCase();
+    arrayString = arrayString.replace(/[^A-Z]/g, ''); //remove any  non-alphabetic char
+    //arrayString = arrayString.replace(/\s+/g, '');
+    //arrayString = arrayString.replace(/,/g, '');
+    //arrayString = arrayString.replace(/[0-9]/g, '');
+    arrayString.trim();
+    if(selectedSet === "DNA")
+    {
+        arrayString = arrayString.replace(/[^ATCG]/g, '');
+    }
+    else if(selectedSet === "RNA")
+    {
+        arrayString = arrayString.replace(/[^AUCG]/g, '')
+    }
+    else if(selectedSet === "Protein")
+    {
+        arrayString = arrayString.replace(/[^WFLIMYVCPTASQNGHREDK]/g, '')
+    }
+
+
     arrayString = arrayString.split("").join(",");
     return arrayString;
 }
 
 function convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
     var result = [];
+    convertInputFormat(selectedSet,arrayString);
 
-    convertInputFormat(arrayString);
     //alert(arrayString);
     if(!Array.isArray(arrayString))
     {

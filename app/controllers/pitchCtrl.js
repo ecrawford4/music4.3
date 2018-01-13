@@ -248,7 +248,7 @@ angular.module("myApp")
 
             var obj = $scope.allVoices[index];
             //$window.alert(obj.pitchSequence);
-            obj.pitchSequence = ConvertBiologySequence.convertInputFormat(obj.pitchSequence);
+            obj.pitchSequence = ConvertBiologySequence.convertInputFormat(obj.selectedSet,obj.pitchSequence);
             obj.pitchInput = ConvertBiologySequence.convert(obj.selectedSet,obj.pitchSequence,
                                                     nitrogenBases,bioType,$scope.proteinValues);//include convertBiologySequence.js
             obj.noteCount = obj.pitchInput.length;

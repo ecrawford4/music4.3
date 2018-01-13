@@ -44,8 +44,8 @@ angular.module("myApp")
     })
     .factory('ConvertBiologySequence', function() {
         var factory = {};
-        factory.convertInputFormat = function (arrayString) {
-            return convertInputFormat(arrayString);
+        factory.convertInputFormat = function (selectedSet,arrayString) {
+            return convertInputFormat(selectedSet,arrayString);
         }
         factory.convert = function(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
             return convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues); // include convertBiologySequence.js
