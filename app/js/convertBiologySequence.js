@@ -42,85 +42,13 @@ function convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
         var proteinValues=[-2.1,-1.7,-1.3,-1.1,-0.7,-0.7,-0.5,0.0,0.1,0.3,0.5,0.5,
                             0.8,0.9,1.2,1.2,1.8,1.9,2.0,2.8];//Double
         var proteinNames = "WFLIMYVCPTASQNGHREDK";
-
-
-/*
-        var proteinValuesJson = [
-            {
-                name : "W", value : -2.1
-            },
-            {
-                name : "F", value : -1.7
-            },
-            {
-                name : "L", value : -1.3
-            },
-            {
-                name : "I", value : -1.1
-            },
-            {
-                name : "M", value : -0.7
-            },
-            {
-                name : "Y", value : -0.7
-            },
-            {
-                name : "V", value : -0.7
-            },
-            {
-                name : "C", value : -0.7
-            },
-            {
-                name : "P", value : -0.7
-            }
-        ];
-*/
         var conversionVal = 10;
         for(var i = 0; i< arrayString.length; i++)
         {
             //find index
             var letterIndex = proteinNames.indexOf(arrayString[i]);
-            /*
-            //alert(arrayString);
-            for(var j = 0; j < proteinValues.length; j++)
-            {
-                //alert("ok");
-                if(arrayString[i] === proteinValues[j].letter)
-                {
-                    letterIndex = j;
-                    //alert(letterIndex);
-                    break;
-                }
-            }
-            */
-            //alert(proteinValues[letterIndex]);
-
             result[i] = parseInt(proteinValues[letterIndex] * conversionVal);
-
-
-
         }
-
-         /*
-         switch (arrayString[i]) {
-         case "W":
-         result[i] = proteinValues[0] * conversionVal;
-         break;
-         case "F":
-         result[i] = proteinValues[1] * conversionVal;
-         break;
-         case "L":
-         result[i] = proteinValues[2] * conversionVal;
-         break;
-         case "I":
-         result[i] = proteinValues[3] * conversionVal;
-         break;
-         case "M":
-         result[i] = proteinValues[4] * conversionVal;
-         break;
-         }
-         */
-
     }
     else
     {
