@@ -1,0 +1,55 @@
+<div ng-controller="playCtrl">
+    <p>Play page</p>
+    {{demo}}
+        {{allVoices.length}}
+    <table border="1">
+        <tr ng-repeat="v in allVoices">
+
+
+            <!-- Print to screen -->
+            <td>
+                <p>Note Count: {{v.noteCount}} </p>
+
+                <p>Pitch input: {{v.pitchInput}}</p>
+
+                <p>Duration Input {{v.durationInput}} </p>
+                <p>Pitch Mapping : {{v.pitchMapping}} </p>
+                <p>Duration Mapping : {{v.durationMapping}} </p>
+                <p>Finall Pitch Mapping : {{v.finalPitchMapping}}
+
+
+            </td>
+            <td>
+                Select Instrument:
+                <p>
+                    <select ng-init="v.instrument = instruments[0]"
+                            ng-model="v.instrument"
+                            ng-options="x.displayName for x in instruments">
+                    </select>
+                </p>
+                <!-- {{v.instrument}} -->
+                <button ng-click="play($index)">Play Voice {{$index+1}}</button>
+                <br>
+            </td>
+
+        </tr>
+
+    </table>
+
+    Mute Track:
+    <ul ng-repeat="v in allVoices">
+
+        <li><input type="checkbox" ng-model="v.muted" /> Track {{$index+1}} : {{v.muted}}</li>
+
+    </ul>
+    <p>
+        Tempo (Range: 1-50): <input type="text" id="tempoID"
+                                    ng-init = "tempo='10'"
+                                    ng-model="tempo">
+
+        tempo : {{tempo}}
+    </p>
+
+    <button ng-click="playAll(tempo)">Play All</button>
+
+</div>

@@ -1,0 +1,121 @@
+
+
+<div>
+
+
+    <!--<p>Formatted Pitch input : <textarea ng-model="v.formattedPitchInput" ng-disabled="true"></textarea></p> -->
+    <p>
+        <input type="radio"  ng-model="utilFunc.main" value="reverse">Reverse<br/>
+        <input type="radio"  ng-model="utilFunc.main" value="invert">Invert<br/>
+        <input type="radio"  ng-model="utilFunc.main" value="parseByRange">Parse by Range<br/>
+        <input type="radio"  ng-model="utilFunc.main" value="sampleRate">Sample Rate<br/>
+        <input type="radio"  ng-model="utilFunc.main" value="addCommas">Add Commas<br/>
+        <input type="radio"  ng-model="utilFunc.main" value="replace">Replace <br/>
+        <input type="radio"  ng-model="utilFunc.main" value="multiplyDecimals">Multiply Decimals <br/>
+        <input type="radio"  ng-model="utilFunc.main" value="ascIIConversion">ASCII Conversion <br/>
+        <input type="radio"  ng-model="utilFunc.main" value="columnConversion">Column Conversion
+    </p>
+
+    <!-- Begin Invert -->
+
+    <div ng-show="utilFunc.main == 'invert'">
+        <input type="radio"  ng-model="utilFunc.invertType" value="invertAvg">Invert via Average
+        <input type="radio"  ng-model="utilFunc.invertType" value="invertValue">Invert around a custom value
+    </div>
+
+    <div ng-show="utilFunc.invertType == 'invertValue' && utilFunc.main == 'invert' ">
+        Enter your value: <input type="text" ng-model="utilFunc.customVal">
+    </div>
+
+    <!-- End Invert -->
+
+    <!-- Begin Parse by Range-->
+    <div ng-show="utilFunc.main == 'parseByRange'">
+        <p>Filter the notes by a range of values.
+            All notes that do not fall in the range become zero. </p>
+        Low: <input type="text" ng-model="utilFunc.low">
+        High: <input type="text" ng-model="utilFunc.high">
+    </div>
+    <!-- End Parse by Range-->
+
+    <!-- Sample Rate -->
+    <div ng-show="utilFunc.main == 'sampleRate'">
+        <p>Reduce the stream size by sampling every X note via the sampling types below.</p>
+        <p> Sample Rate : <input type="text" ng-model="utilFunc.sampleRateNo"> </p>
+        <p>Sample type :
+            <input type="radio"  ng-model="utilFunc.sampleRateType" value="average">Average
+            <input type="radio"  ng-model="utilFunc.sampleRateType" value="median">Median
+            <input type="radio"  ng-model="utilFunc.sampleRateType" value="actual">Actual
+        </p>
+
+    </div>
+    <!-- End Sample Rate -->
+
+    <!-- Begin Add Commas -->
+    <div ng-show="utilFunc.main == 'addCommas'">
+        <p>
+            These tools will help separate the data for use in other functions.<br/>
+            This function is best used for data that isn't separated by anything and needs commas.<br/>
+            If the data is already separated by something that isn't a comma, consider using the replace utility instead.
+
+        </p>
+        Insert a comma every: <input type="text" ng-model="utilFunc.comma">
+
+    </div>
+
+    <!-- Begin Replace -->
+    <div ng-show="utilFunc.main == 'replace'">
+        <p>Replace characters in the stream.</p>
+        <p> Replace <input type="text" ng-model="utilFunc.replaceCharFrom">
+            with <input type="text" ng-model="utilFunc.replaceCharTo">
+        </p>
+
+    </div>
+
+    <!-- End Replace-->
+
+    <!-- Begin Multiply Decimals -->
+    <div ng-show="utilFunc.main == 'multiplyDecimals'">
+        <p>Use these tools to turn decimal numbers into a more playable form.</p>
+        <p>Multiply with <input type="text" ng-model="utilFunc.multiplyNo"></p>
+        <p ng-init="utilFunc.multiplyType='round'">
+            <input type="radio"  ng-model="utilFunc.multiplyType" value="round">Round
+            <input type="radio"  ng-model="utilFunc.multiplyType" value="floor">Floor
+            <input type="radio"  ng-model="utilFunc.multiplyType" value="ceiling">Ceiling
+
+        </p>
+    </div>
+
+    <!-- End Multiply Decimals-->
+
+    <!-- Begin ASCII Conversion -->
+    <div ng-show="utilFunc.main == 'ascIIConversion'">
+        <p>This tool converts comma separated keyboard characters to corresponding ASCII values. </p>
+        <p>You can add commas to your source material by using the "Add Commas" or "Replace" tools above</p>
+
+    </div>
+
+    <!-- End ASCII Conversion-->
+
+    <!-- End Multiply Decimals-->
+
+    <!-- Begin Column Conversion -->
+    <div ng-show="utilFunc.main == 'columnConversion'">
+        <p>This tool to filter data in column. </p>
+        <p>Use column number: <input type="text" ng-model="utilFunc.columnNo" ng-init="utilFunc.columnNo = 2"></p>
+        <p>Decimal Precision: <input type="text" ng-model="utilFunc.decimalPrecision" ng-init="utilFunc.decimalPrecision = 0"></p>
+        <!--<p><input type="checkbox" ng-model="utilFunc.checkCommaPlace" ng-init="utilFunc.checkCommaPlace=false">Commas are used for placeholders </p>
+        -->
+    </div>
+
+    <!-- End ASCII Conversion-->
+
+    <button ng-click="changeInput($index,utilFunc)">Get Formatted Pitch Input</button></br><br/>
+    <!-- <button ng-click="reverse($index)">Reverse</button> -->
+
+    <!-- <button ng-click="dismiss($index)">Dismiss</button><br/> -->
+
+
+    <button ng-click="saveInput($index)">Apply</button>
+    <button ng-click="discard($index)">Discard</button>
+</div>

@@ -1,0 +1,453 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<style>
+    #voice_container_div {
+        *zoom: 1;
+        display: block;
+        width: 100%;
+        padding: 2px;
+        background: #f8f8f8;
+        color: #222; }
+    #voice_container_div:before, #voice_container_div:after {
+        content: " ";
+        display: table; }
+    #voice_container_div:after {
+        clear: both; }
+    .play
+    {/*
+        background:#333333;
+        height:200px; */
+    }
+    .voice
+    {
+
+    }
+
+
+
+    #voice_container_div
+    {
+        height:300px;
+        background:#333333;
+    }
+    #progress
+    {
+        width:80%;
+        display:block;
+        margin-left:auto;
+        margin-right:auto;
+    }
+    #counter
+    {
+        float:right;
+
+        position:relative;
+    }
+    .play_voice
+    {
+        width:90%;
+        height:20%;
+        Position:relative;
+        margin:.5%;
+        left:5%;
+        top:2%;
+        background:#c0c0c0;
+        border-radius:5px;
+
+
+    }
+    .player
+    {
+
+        width:60%;
+        height:30%;
+        background:#808080;
+        margin-left:auto;
+        margin-right:auto;
+    }
+    .progressDiv
+    {
+        width:90%;
+        height:20%;
+        Position:relative;
+        margin:.5%;
+        left:5%;
+        top:2%;
+        background:#808080;
+        border-radius:5px;
+    }
+
+
+    .play_voice .output
+    {
+        display:block;
+        margin:0;
+        background:black;
+        color:white;
+        width:43%;
+        float:right;
+
+
+
+    }
+
+    .cur
+    {
+        width:3%;
+
+
+
+    }
+    .play_voice input
+    {
+        float:right;
+    }
+
+
+    #pianoBody
+    {
+
+        width:100%;
+        height:100px;
+        background:green;
+        Position:relative;
+    }
+    #o00
+    {
+        width:3.846%;
+    }
+    #o7
+    {
+        width:1.923%;
+    }
+    .octave {
+
+        float: left;
+        position:relative;
+        width:13.461%;
+        height:100%;
+    }
+    .keyWhite
+    {
+        background:white;
+        height:100%;
+        width:14.285%;
+        outline:1px solid;
+        float:left;
+        position:relative;
+    }
+    .keyBlack
+    {
+        background:black;
+        height:66.66%;
+        width:7.1425%;
+        outline:1px solid;
+        float:left;
+        position: absolute;
+
+    }
+    div.flats {
+
+    }
+    div.flats :nth-child(1) {
+        margin-left:10.7135% /*3.846%;*/
+    }
+    div.flats :nth-child(2) {
+        margin-left: 24.99875%/*5.769%;*/
+    }
+    div.flats :nth-child(3) {
+        margin-left: 53.56875%/*9.615%;*/
+    }
+    div.flats :nth-child(4) {
+        margin-left: 67.85375%/*11.538%*/;
+    }
+    div.flats :nth-child(5) {
+        margin-left: 82.1385%;
+    }
+
+
+
+</style>
+<div ng-controller="pitchCtrl" data-ng-init="init()">
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width: 25%">
+            <span>Pitch</span>
+        </div>
+
+        <div class="progress-bar progress-bar-warning progress-bar" style="width: 25%">
+            <span>Duration</span>
+        </div>
+
+        <div class="progress-bar progress-bar-danger" style="width: 25%">
+            <span>Scale Options</span>
+        </div>
+
+        <div class="progress-bar progress-bar-info" style="width: 25%">
+            <span>Play</span>
+        </div>
+
+    </div>
+    <div>
+        <p>
+            <button type="button" class="btn btn-info btn-sm" ng-click="resetData()()">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reset Data
+            </button>
+
+            <button type="button" class="btn btn-primary btn-sm" ng-click="download(tempo)">
+                <span class="glyphicon glyphicon-download"></span> Download MIDI
+            </button>
+        </p>
+    </div>
+
+
+    <!-- <button ng-click="download(tempo)">Download MIDI</button> -->
+
+    <form id="download" action="php/createMidi.php" method="post">
+        <input type="hidden" id="notedata" name="notedata">
+        <input type="hidden" id="binaryStream2" name="binaryStream">
+        <!-- <input type="submit" value="Submit"> -->
+    </form>
+
+
+    <div id="products" class="row list-group" >
+        <div  class="item  col-xs-6 col-lg-6" ng-repeat="v in allVoices">
+            <div id="playBorder{{$index+1}}" class="thumbnail">
+
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Voice {{$index + 1}}
+                       Note Count: {{v.noteCount}}
+                    </h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <!--<p> {{loadData}}</p> -->
+
+                            <!--
+                            <p>Pitch input: {{v.pitchInput}}</p>
+
+                            <p>Duration Input {{v.durationInput}} </p>
+                            <p>Pitch Mapping : {{v.pitchMapping}} </p>
+                            -->
+                            <p>
+                                Pitch:
+                                <textarea ng-model="v.finalPitchMapping" class="form-control" rows="4" cols="50" readonly>
+                                </textarea>
+                                Duration:
+                                <textarea ng-model="v.durationMapping" class="form-control" rows="4" cols="50" readonly>
+                                </textarea>
+                            </p>
+                            <div class="form-inline">
+                                <p>
+                                    Select Instrument:
+                                    <select class="form-control"
+                                            ng-init="v.instrument = instruments[0]"
+                                            ng-model="v.instrument"
+                                            ng-options="x.displayName for x in instruments">
+                                    </select>
+                                </p>
+                                Mute Track: <input type="checkbox" ng-model="v.muted" />
+                                <!--
+                                <button type="button" class="btn btn-primary btn-sm" ng-click="play($index,tempo)" ng-disabled="v.muted">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                </button>
+                                -->
+                            </div>
+
+
+
+                        </div> <!-- end input -->
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br/>
+    <button type="button" class="btn btn-primary" ng-click="playAll(tempo)">
+        <span class="glyphicon glyphicon-play"></span> Play All
+    </button>
+    <br/><br/>
+    <!-- <button ng-click="playAll(tempo)">Play All</button> -->
+    <!--<button ng-click="playAll2(tempo)">Play All 2</button> <br/><br/> -->
+    <!-- <button ng-click="pause()">Pause</button> <br/><br/>
+    <button ng-click="resume()">Resume</button> <br/><br/> -->
+    <!-- pause = 1, play =2 , stop =3 -->
+    <!--
+    <p>
+        <input type="image" src="./img/play.png" align="absmiddle" value="play" ng-click="pausePlayStop(tempo,false)" id="playPauseBtn">
+
+        <input type="image" src="./img/stop.png" align="absmiddle" value="stop" ng-click="pausePlayStop(tempo,true)" id="stopBtn">
+    </p>
+    -->
+    <md-content>
+        <md-slider-container>
+            <span>Tempo: </span>
+            <md-slider flex min="0" max="120" ng-model="tempo" aria-label="red" id="red-slider">
+            </md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="tempo" aria-label="red" aria-controls="red-slider">
+            </md-input-container>
+        </md-slider-container>
+    </md-content>
+    <div>
+        <div id="pianoBody">
+            <div id="o00" class="octave">
+                <div class="keyWhite" id="1" style="width:50%"></div>
+                <div class="keyWhite" id="3" style="width:50%"></div>
+                <div class="keyBlack" id="2" style="width:25%; left:35.16%"></div>
+            </div>
+            <div id="o0" class="octave">
+                <div class="keyWhite" id="4"></div>
+                <div class="keyWhite" id="6"></div>
+                <div class="keyWhite" id="8"></div>
+                <div class="keyWhite" id="9"></div>
+                <div class="keyWhite" id="11"></div>
+                <div class="keyWhite" id="13"></div>
+                <div class="keyWhite" id="15"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="5"></div>
+                    <div class="keyBlack" id="7"></div>
+                    <div class="keyBlack" id="10"></div>
+                    <div class="keyBlack" id="12"></div>
+                    <div class="keyBlack" id="14"></div></div>
+            </div>
+            <div id="o1" class="octave">
+                <div class="keyWhite" id="16"></div>
+                <div class="keyWhite" id="18"></div>
+                <div class="keyWhite" id="20"></div>
+                <div class="keyWhite" id="21"></div>
+                <div class="keyWhite" id="23"></div>
+                <div class="keyWhite" id="25"></div>
+                <div class="keyWhite" id="27"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="17"></div>
+                    <div class="keyBlack" id="19"></div>
+                    <div class="keyBlack" id="22"></div>
+                    <div class="keyBlack" id="24"></div>
+                    <div class="keyBlack" id="26"></div></div>
+            </div>
+            <div id="o2" class="octave">
+                <div class="keyWhite" id="28"></div>
+                <div class="keyWhite" id="30"></div>
+                <div class="keyWhite" id="32"></div>
+                <div class="keyWhite" id="33"></div>
+                <div class="keyWhite" id="35"></div>
+                <div class="keyWhite" id="37"></div>
+                <div class="keyWhite" id="39"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="29"></div>
+                    <div class="keyBlack" id="31"></div>
+                    <div class="keyBlack" id="34"></div>
+                    <div class="keyBlack" id="36"></div>
+                    <div class="keyBlack" id="38"></div></div>
+            </div>
+            <div id="o3" class="octave">
+                <div class="keyWhite" id="40"></div>
+                <div class="keyWhite" id="42"></div>
+                <div class="keyWhite" id="44"></div>
+                <div class="keyWhite" id="45"></div>
+                <div class="keyWhite" id="47"></div>
+                <div class="keyWhite" id="49"></div>
+                <div class="keyWhite" id="51"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="41"></div>
+                    <div class="keyBlack" id="43"></div>
+                    <div class="keyBlack" id="46"></div>
+                    <div class="keyBlack" id="48"></div>
+                    <div class="keyBlack" id="50"></div></div>
+            </div>
+            <div id="o4" class="octave">
+                <div class="keyWhite" id="52"></div>
+                <div class="keyWhite" id="54"></div>
+                <div class="keyWhite" id="56"></div>
+                <div class="keyWhite" id="57"></div>
+                <div class="keyWhite" id="59"></div>
+                <div class="keyWhite" id="61"></div>
+                <div class="keyWhite" id="63"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="53"></div>
+                    <div class="keyBlack" id="55"></div>
+                    <div class="keyBlack" id="58"></div>
+                    <div class="keyBlack" id="60"></div>
+                    <div class="keyBlack" id="62"></div></div>
+            </div>
+            <div id="o5" class="octave">
+                <div class="keyWhite" id="64"></div>
+                <div class="keyWhite" id="66"></div>
+                <div class="keyWhite" id="68"></div>
+                <div class="keyWhite" id="69"></div>
+                <div class="keyWhite" id="71"></div>
+                <div class="keyWhite" id="73"></div>
+                <div class="keyWhite" id="75"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="65"></div>
+                    <div class="keyBlack" id="67"></div>
+                    <div class="keyBlack" id="70"></div>
+                    <div class="keyBlack" id="72"></div>
+                    <div class="keyBlack" id="74"></div></div>
+            </div>
+
+            <div id="o6" class="octave">
+                <div class="keyWhite" id="76"></div>
+                <div class="keyWhite" id="78"></div>
+                <div class="keyWhite" id="80"></div>
+                <div class="keyWhite" id="81"></div>
+                <div class="keyWhite" id="83"></div>
+                <div class="keyWhite" id="85"></div>
+                <div class="keyWhite" id="87"></div>
+                <div class="flats">
+                    <div class="keyBlack" id="77"></div>
+                    <div class="keyBlack" id="79"></div>
+                    <div class="keyBlack" id="82"></div>
+                    <div class="keyBlack" id="84"></div>
+                    <div class="keyBlack" id="86"></div></div>
+            </div>
+            <div id="o7" class="octave">
+                <div class="keyWhite" id="88" style="width:100%"></div>
+            </div>
+
+        </div>
+        <!--
+        <div id="keys">
+
+
+        </div>
+
+        <div style="overflow: hidden;" id="colors"></div>
+        <div class="player">
+
+
+
+            <div class="time-controls" style="float: left; margin: 0; position: relative; top: 5px;">
+                <span id="time1" class="time">0:00</span>
+                <span id="capsule">
+					<span id="cursor"></span>
+				</span>
+                <span id="time2" class="time" style="text-align: left;">-0:00</span>
+            </div>
+        </div>
+        -->
+
+        <p>
+
+
+
+    </div>
+
+
+<br/><br/>
+
+
+
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous"><a href="#scaleOptions"><span aria-hidden="true">&larr;</span> Scale Options</a></li>
+            <!-- <li class="next"><a href="#duration">Duration <span aria-hidden="true">&rarr;</span></a></li> -->
+        </ul>
+    </nav>
+
+
+
+
+</div>

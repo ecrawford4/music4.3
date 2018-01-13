@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <script src="angular.js"></script>
+
+
+
+    <script>
+
+        angular.module("myApp", ["ngRoute","ngStorage", "ngMaterial"])
+            .config(function($mdIconProvider) {
+                $mdIconProvider
+                    .iconSet('device', 'img/icons/sets/device-icons.svg', 24);
+            })
+            .config(function($routeProvider) {
+                $routeProvider
+                    .when("/home", {
+                        templateUrl : "views/home.html"
+                    })
+                    .when("/howto", {
+                        templateUrl : "views/howto.html"
+                    })
+                    .when("/pitch", {
+                        templateUrl : "views/pitch.html"
+                    })
+                    .when("/duration", {
+                        templateUrl : "views/duration.html"
+                    })
+                    .when("/scaleOptions", {
+                        templateUrl : "views/scaleOptions.html"
+                    })
+                    .when("/morph", {
+                        templateUrl : "views/morph.html"
+                    })
+                    .when("/play", {
+                        templateUrl : "views/play.html"
+                    })
+                    .otherwise({
+                        templateUrl : "views/home.html"
+                    });
+            });
+
+
+
+    </script>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <!-- CSS -->
+   <!-- <link href="css/bootstrap.css" rel="stylesheet" /> -->
+    <link href="css/bootstrap-theme.css" rel="stylesheet" />
+
+    <!-- End CSS -->
+
+    <script src="ngmodules/angular-route.js"></script>
+   <!--  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script> -->
+
+    <!-- Controllers -->
+    <script src="controllers/appCtrl.js"></script>
+    <script src="controllers/pitchCtrl.js"></script>
+    <script src="controllers/durationCtrl.js"></script>
+    <script src="controllers/scaleCtrl.js"></script>
+    <script src="controllers/playCtrl.js"></script>
+    <script src="controllers/appCtrl.js"></script>
+
+    <!-- End Controllers -->
+
+
+    <script src="views/ngStorage.js"></script>
+
+    <!-- Begin Include JS -->
+    <script src="js/inputSet.js"></script>
+    <script src="js/inputMapping.js"></script>
+    <script src="js/convertBiologySequence.js"></script>
+    <script src="js/utility.js"></script>
+    <script src="js/finalInputMapping.js"></script>
+    <script src="js/playMusic.js"></script>
+    <script src="js/downloadData.js"></script>
+    <script src="js/drawChart.js"></script>
+    <!-- End Include JS -->
+
+    <!-- Begin include  for midi -->
+    <!-- midi.js css -->
+    <link href="./css/MIDIPlayer.css" rel="stylesheet" type="text/css" />
+    <!-- shim -->
+    <script src="midi/inc/shim/Base64.js" type="text/javascript"></script>
+    <script src="midi/inc/shim/Base64binary.js" type="text/javascript"></script>
+    <script src="midi/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    <!-- jasmid package -->
+    <script src="midi/inc/jasmid/stream.js"></script>
+    <script src="midi/inc/jasmid/midifile.js"></script>
+    <script src="midi/inc/jasmid/replayer.js"></script>
+    <!-- midi.js package -->
+    <script src="midi/js/midi/audioDetect.js" type="text/javascript"></script>
+    <script src="midi/js/midi/gm.js" type="text/javascript"></script>
+    <script src="midi/js/midi/loader.js" type="text/javascript"></script>
+    <script src="midi/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+    <script src="midi/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+    <script src="midi/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+    <script src="midi/js/midi/player.js" type="text/javascript"></script>
+    <script src="midi/js/midi/synesthesia.js" type="text/javascript"></script>
+    <!-- utils -->
+    <script src="midi/js/util/dom_request_xhr.js" type="text/javascript"></script>
+    <script src="midi/js/util/dom_request_script.js" type="text/javascript"></script>
+    <!-- includes -->
+    <script src="midi/examples/inc/timer.js" type="text/javascript"></script>
+    <script src="midi/examples/inc/colorspace.js" type="text/javascript"></script>
+    <script src="midi/examples/inc/event.js" type="text/javascript"></script>
+    <!-- End include  for midi -->
+
+    <!-- For tooltip -->
+    <!-- Bootstrap core CSS -->
+    <!-- <link href="./css/bootstrap.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/tooltip-viewport.css" rel="stylesheet">
+    <!-- End tooltip -->
+
+    <!-- Start for  slider -->
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <!-- end  slider-->
+
+    <style>
+        .thumbnail{
+            border-width: thin;
+        }
+        #playBorder1{
+            border-color: #ee421f;
+        }
+
+        #playBorder2{
+            border-color: #71ee13;
+        }
+
+        #playBorder3{
+            border-color: #132cee;
+        }
+
+        #playBorder4{
+            border-color: #ee19e4;
+        }
+    </style>
+
+</head>
+
+
+<body ng-controller="myAppCtrl">
+
+    <div class="container-fluid">
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+
+                    <a class="navbar-brand" href="#">Music Algorithms</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li ><a href="#home" >Home</a></li>
+                        <li><a href="#howto">How To</a></li>
+                    </ul>
+                    <!--
+                    <form class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Number of Voices" ng-model="numVoices">
+                        </div>
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    -->
+
+                    <ul class="nav navbar-nav navbar-right">
+
+                        <!--
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">1</a></li>
+                                <li><a href="#">2 action</a></li>
+                                <li><a href="#">3 else here</a></li>
+                            </ul>
+                        </li>
+                        -->
+                        <li><a href="#pitch"  class="glyphicon"> Pitch</a></li>
+                        <li><a href="#duration" class="glyphicon glyphicon-menu-right"> Duration</a></li>
+                        <li><a href="#scaleOptions" class="glyphicon glyphicon-menu-right"> Scale Options</a></li>
+                        <li><a href="#play" class="glyphicon glyphicon-menu-right"> Play</a></li>
+
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+
+
+        <div ng-view></div>
+
+
+
+
+    </div> <!-- End container -->
+
+
+    <!-- Bootstrap core JavaScript
+        ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./jquery/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="./jquery/jquery.min.js"><\/script>')</script>
+    <!-- <script src="./js/bootstrap.min.js"></script> -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="./js/tooltip-viewport.js"></script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    google.charts.load('current', {packages: ['corechart', 'line']});
+
+</script>
+
+</body>
+
+</html>

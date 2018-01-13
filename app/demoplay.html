@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<style>
+    #voice_container_div {
+        *zoom: 1;
+        display: block;
+        width: 100%;
+        padding: 2px;
+        background: #f8f8f8;
+        color: #222; }
+    #voice_container_div:before, #voice_container_div:after {
+        content: " ";
+        display: table; }
+    #voice_container_div:after {
+        clear: both; }
+    .play
+    {
+        background:#333333;
+        height:200px;
+    }
+    .voice
+    {
+
+    }
+
+
+
+    #voice_container_div
+    {
+        height:300px;
+        background:#333333;
+    }
+    #progress
+    {
+        width:80%;
+        display:block;
+        margin-left:auto;
+        margin-right:auto;
+    }
+    #counter
+    {
+        float:right;
+
+        position:relative;
+    }
+    .play_voice
+    {
+        width:90%;
+        height:20%;
+        Position:relative;
+        margin:.5%;
+        left:5%;
+        top:2%;
+        background:#c0c0c0;
+        border-radius:5px;
+
+
+    }
+    .player
+    {
+
+        width:60%;
+        height:30%;
+        background:#808080;
+        margin-left:auto;
+        margin-right:auto;
+    }
+    .progressDiv
+    {
+        width:90%;
+        height:20%;
+        Position:relative;
+        margin:.5%;
+        left:5%;
+        top:2%;
+        background:#808080;
+        border-radius:5px;
+    }
+
+
+    .play_voice .output
+    {
+        display:block;
+        margin:0;
+        background:black;
+        color:white;
+        width:43%;
+        float:right;
+
+
+
+    }
+
+    .cur
+    {
+        width:3%;
+
+
+
+    }
+    .play_voice input
+    {
+        float:right;
+    }
+
+
+    #pianoBody
+    {
+
+        width:100%;
+        height:100px;
+        background:green;
+        Position:relative;
+    }
+    #o00
+    {
+        width:3.846%;
+    }
+    #o7
+    {
+        width:1.923%;
+    }
+    .octave {
+
+        float: left;
+        position:relative;
+        width:13.461%;
+        height:100%;
+    }
+    .keyWhite
+    {
+        background:white;
+        height:100%;
+        width:14.285%;
+        outline:1px solid;
+        float:left;
+        position:relative;
+    }
+    .keyBlack
+    {
+        background:black;
+        height:66.66%;
+        width:7.1425%;
+        outline:1px solid;
+        float:left;
+        position: absolute;
+
+    }
+    div.flats {
+
+    }
+    div.flats :nth-child(1) {
+        margin-left:10.7135% /*3.846%;*/
+    }
+    div.flats :nth-child(2) {
+        margin-left: 24.99875%/*5.769%;*/
+    }
+    div.flats :nth-child(3) {
+        margin-left: 53.56875%/*9.615%;*/
+    }
+    div.flats :nth-child(4) {
+        margin-left: 67.85375%/*11.538%*/;
+    }
+    div.flats :nth-child(5) {
+        margin-left: 82.1385%;
+    }
+
+
+
+</style>
+</head>
+<body>
+<div class="play" >
+
+    <div id="voice_container_div">
+
+    </div>
+    <div class="progressDiv">Progress:
+        <input type="range" id="progress" value="0" onchange="setControls()" max="1000" min="0">
+        <Label id="counter">0 of 24</label>
+
+    </div>
+    <div class="player">
+        <form id="download" action="js/php/createMidi.php" method="post">
+            <input type="hidden" id="notedata" name="notedata">
+            <input type="hidden" id="binaryStream" name="binaryStream">
+        </form>
+
+        <div>Tempo:
+            <input type="range" id="tempo" value="60" onchange="" style="width:80%" max="240" min="1">
+            <Label id='bpm' style="float:right">60 bpm</label>
+        </div>
+    </div>
+
+    <div class="player_options">
+        <button class="btn btn-success player-play"><span class=" glyphicon glyphicon-play"></span> Play</button>
+        <button class="btn btn-warning player-pause"><span class=" glyphicon glyphicon-pause"></span> Pause</button>
+        <button class="btn btn-danger player-stop"> <span class="glyphicon glyphicon-stop"></span> Stop</button>
+    </div>
+    <!--end player-->
+
+    <div id="pianoBody">
+        <div id="o00" class="octave">
+            <div class="keyWhite" id="1" style="width:50%"></div>
+            <div class="keyWhite" id="3" style="width:50%"></div>
+            <div class="keyBlack" id="2" style="width:25%; left:35.16%"></div>
+        </div>
+        <div id="o0" class="octave">
+            <div class="keyWhite" id="4"></div>
+            <div class="keyWhite" id="6"></div>
+            <div class="keyWhite" id="8"></div>
+            <div class="keyWhite" id="9"></div>
+            <div class="keyWhite" id="11"></div>
+            <div class="keyWhite" id="13"></div>
+            <div class="keyWhite" id="15"></div>
+            <div class="flats">
+                <div class="keyBlack" id="5"></div>
+                <div class="keyBlack" id="7"></div>
+                <div class="keyBlack" id="10"></div>
+                <div class="keyBlack" id="12"></div>
+                <div class="keyBlack" id="14"></div></div>
+        </div>
+        <div id="o1" class="octave">
+            <div class="keyWhite" id="16"></div>
+            <div class="keyWhite" id="18"></div>
+            <div class="keyWhite" id="20"></div>
+            <div class="keyWhite" id="21"></div>
+            <div class="keyWhite" id="23"></div>
+            <div class="keyWhite" id="25"></div>
+            <div class="keyWhite" id="27"></div>
+            <div class="flats">
+                <div class="keyBlack" id="17"></div>
+                <div class="keyBlack" id="19"></div>
+                <div class="keyBlack" id="22"></div>
+                <div class="keyBlack" id="24"></div>
+                <div class="keyBlack" id="26"></div></div>
+        </div>
+        <div id="o2" class="octave">
+            <div class="keyWhite" id="28"></div>
+            <div class="keyWhite" id="30"></div>
+            <div class="keyWhite" id="32"></div>
+            <div class="keyWhite" id="33"></div>
+            <div class="keyWhite" id="35"></div>
+            <div class="keyWhite" id="37"></div>
+            <div class="keyWhite" id="39"></div>
+            <div class="flats">
+                <div class="keyBlack" id="29"></div>
+                <div class="keyBlack" id="31"></div>
+                <div class="keyBlack" id="34"></div>
+                <div class="keyBlack" id="36"></div>
+                <div class="keyBlack" id="38"></div></div>
+        </div>
+        <div id="o3" class="octave">
+            <div class="keyWhite" id="40"></div>
+            <div class="keyWhite" id="42"></div>
+            <div class="keyWhite" id="44"></div>
+            <div class="keyWhite" id="45"></div>
+            <div class="keyWhite" id="47"></div>
+            <div class="keyWhite" id="49"></div>
+            <div class="keyWhite" id="51"></div>
+            <div class="flats">
+                <div class="keyBlack" id="41"></div>
+                <div class="keyBlack" id="43"></div>
+                <div class="keyBlack" id="46"></div>
+                <div class="keyBlack" id="48"></div>
+                <div class="keyBlack" id="50"></div></div>
+        </div>
+        <div id="o4" class="octave">
+            <div class="keyWhite" id="52"></div>
+            <div class="keyWhite" id="54"></div>
+            <div class="keyWhite" id="56"></div>
+            <div class="keyWhite" id="57"></div>
+            <div class="keyWhite" id="59"></div>
+            <div class="keyWhite" id="61"></div>
+            <div class="keyWhite" id="63"></div>
+            <div class="flats">
+                <div class="keyBlack" id="53"></div>
+                <div class="keyBlack" id="55"></div>
+                <div class="keyBlack" id="58"></div>
+                <div class="keyBlack" id="60"></div>
+                <div class="keyBlack" id="62"></div></div>
+        </div>
+        <div id="o5" class="octave">
+            <div class="keyWhite" id="64"></div>
+            <div class="keyWhite" id="66"></div>
+            <div class="keyWhite" id="68"></div>
+            <div class="keyWhite" id="69"></div>
+            <div class="keyWhite" id="71"></div>
+            <div class="keyWhite" id="73"></div>
+            <div class="keyWhite" id="75"></div>
+            <div class="flats">
+                <div class="keyBlack" id="65"></div>
+                <div class="keyBlack" id="67"></div>
+                <div class="keyBlack" id="70"></div>
+                <div class="keyBlack" id="72"></div>
+                <div class="keyBlack" id="74"></div></div>
+        </div>
+
+        <div id="o6" class="octave">
+            <div class="keyWhite" id="76"></div>
+            <div class="keyWhite" id="78"></div>
+            <div class="keyWhite" id="80"></div>
+            <div class="keyWhite" id="81"></div>
+            <div class="keyWhite" id="83"></div>
+            <div class="keyWhite" id="85"></div>
+            <div class="keyWhite" id="87"></div>
+            <div class="flats">
+                <div class="keyBlack" id="77"></div>
+                <div class="keyBlack" id="79"></div>
+                <div class="keyBlack" id="82"></div>
+                <div class="keyBlack" id="84"></div>
+                <div class="keyBlack" id="86"></div></div>
+        </div>
+        <div id="o7" class="octave">
+            <div class="keyWhite" id="88" style="width:100%"></div>
+        </div>
+
+
+        <div>
+            <p>Pitch: <p id="pitchDisplay"> </p></p>
+            <p>Duration: <p id="durationDisplay"> </p></p>
+        </div>
+    </div><!--End piano body-->
+</div>
+<button onclick="createMidi()">createMidi</button>
+<button onclick="play()">click</button>
+<button onclick="change()">click</button>
+
+<form id="download2" action="php/createMidi.php" method="post">
+    <input type="hidden" id="notedata2" name="notedata" value="1234">
+    <input type="hidden" id="binaryStream2" name="binaryStream">
+    <input type="submit" value="Submit">
+</form>
+</body>
+<script>
+    function  change() {
+        document.getElementById("demo").innerHTML = document.getElementById("demo").innerHTML +"123";
+    }
+    /*
+    var fruits, text, fLen, i;
+
+    fruits = ["Banana", "Orange", "Apple", "Mango"];
+    fLen = fruits.length;
+    text = "<ul>";
+    for (i = 0; i < fLen; i++) {
+        var idName = "fruits"+i;
+        //alert(idName);
+        text += '<li id=idName>' + fruits[i] + '</li>';
+    }
+    text += "</ul>";
+    document.getElementById("demo").innerHTML = text;
+
+    function  change() {
+        $("#fruits1").css("background","#ee5f5b");
+    }
+
+*/
+    function createMidi(type)
+    {
+        //add 20 to current pitch values
+        var channel=1;
+        //get tempo
+        var tempo=60;
+        // get voice amount
+        var voiceNum = 1;
+        //alert("bpm set at: "+ tempo);
+        var microTempo=60000000/tempo;
+
+        var division=480;
+        if(type=='MTC')
+            division=24
+
+        var basedata = 'MFile 0 1 '+division+'|MTrk|0 TimeSig 4/4 24 8|0 Tempo '+microTempo+'|0 Meta TrkEnd|TrkEnd';
+        var basedataArray=basedata.split('|');
+
+        var mididata;
+        mididata =basedataArray.join('\r\n');
+        //window.alert(mididata);
+        //window.alert(mididata);
+        //var encodedData = window.btoa(mididata);
+        //window.alert(encodedData);
+        /*
+        for(i=0; i<voiceNum;i++)
+        {
+            var track=createTrack(basedataArray,voiceArray[i], i+1, microTempo, type);
+            mididata=mididata+'\r\n'+track;
+        }*/
+        var voiceArray = [];
+        voiceArray[0] = [];
+        var voiceEach = voiceArray[0];
+        voiceEach.FinalPitchArray = [2,23,45,67,88];
+        voiceEach.durationMappingArray = [0,2,3,5,6];
+        console.log(voiceEach);
+        var track=createTrack(basedataArray,voiceArray[0], 0+1, microTempo, type);
+        mididata=mididata+'\r\n'+track;
+        console.log(mididata);
+        console.log(window.btoa(mididata));
+        //var encodedData = window.btoa(mididata);
+        //window.alert(encodedData);
+        document.forms['download'].notedata.value=mididata;
+
+
+
+
+
+    }
+
+    function createTrack( basedataArray, voice,channel,microTempo,type)
+    {
+        var nThisDuration;
+        var nowDur = 0;
+        var pitchArray = voice.FinalPitchArray;
+        var durationArray = voice.durationMappingArray;
+        var midiNotes = new Array(pitchArray.length);
+
+        // get instrument string
+        var trackdata = 'MTrk' //|0 Meta Text "'+voice.instrumentString+'"|0 ParCh='+channel+' p='+voice.instrument+' v=120';
+        var trackdataArray = trackdata.split('|');
+
+        for(var i=0; i < midiNotes.length; i++)
+        {
+            midiNotes[i] = pitchArray[i]+20;
+            if (isNaN(midiNotes[i]))
+            {
+                alert('note ' + i + ' is invalid. Notes must be integers.');
+                return;
+            }
+            if ((midiNotes[i]<0) || (midiNotes[i]>=127))
+            {
+                alert('note ' + midiNotes[i]+"= "+"midiNotes[" +i+"]"+ ' is invalid. Notes must be valid midi notes between 0 and 127.');
+                return;
+            }
+
+            if (type=="MTC")
+                nThisDuration=getMidiClocks(durationArray[i]);
+            else //SMPTE event time division
+                nThisDuration= (1 << durationArray[i])*24;
+
+            if (isNaN(nThisDuration))
+            {
+                alert('duration ' + i + ' is invalid. must be integer.');
+                return;
+            }
+
+            if (midiNotes[i] > 20)
+            {
+                //Add to the MIDI data an "On" event
+                trackdataArray.push(nowDur +' On ch='+channel+ ' n='+midiNotes[i]+ ' v=120');
+                //Add to the MIDI data an "Off" event
+                trackdataArray.push(nowDur + 6  +' Off ch='+channel+' n='+midiNotes[i]+ ' v=120');
+            }
+            nowDur += 6; // Increment a 16th note
+        }
+        trackdataArray.push(nowDur +' Meta TrkEnd');
+        trackdataArray.push('TrkEnd');
+        return trackdataArray.join('\r\n');
+    }
+
+
+/*
+    window.onload =  function() {
+        var numberOfVoice = 1
+        var $voice="\
+		<div class='voice cf' id='voiceContainer"+numberOfVoice+"'>\
+			<div class='play_voiceStyle cf'><label style='float:left;'>Pitch: </label>\
+			\
+			<div class='overflowDiv'> \
+			<input type='text' class='outputRight' id='voice"+numberOfVoice+"_pitch' disabled >\
+			</div> \
+			\
+			<input type='text' class='cur' id='voice"+numberOfVoice+"_curpitch' disabled > \
+			\
+			<div class='overflowDiv'> \
+			<input type='text' class='outputLeft' id='voice"+numberOfVoice+"_pitchplayed'  disabled ></div> \
+			</div> \
+			\
+			\
+			<div class='play_voiceStyle cf'><label style='float:left;'>Duration: </label> \
+			\
+			<div class='overflowDiv'> \
+			<input type='text' class='outputRight duration' id='voice"+numberOfVoice+"_duration' disabled> \
+			</div> \
+			\
+			<input type='text' class='cur'id='voice"+numberOfVoice+"_curduration' disabled >\
+			\
+			<div class='overflowDiv'> \
+			<input type='text' class='outputLeft duration' id='voice"+numberOfVoice+"_durationplayed' disabled></div>\
+			</div>\
+			\
+			<div class='choose-mute'>Mute Track: <input type='checkbox' name='mute' id='mute"+numberOfVoice+"' onclick='muteTrack($(this))'></div>\
+			<div class='choose-instrument'>Instrument: <select class='instrument"+numberOfVoice+"' onchange='selectInstrument("+numberOfVoice+");instrumentTooltip(this);'>\
+				<option>Piano</option>\
+				<option>Vibraphone</option>\
+				<option>Marimba</option>\
+				<option>Classical Guitar</option>\
+				<option>Synth Drum</option>\
+				<option>Bass</option>\
+				<option>Flute</option>\
+				<option>Cello</option>\
+				<option>Tenor Sax</option>\
+				<option>Woodblock</option>\
+				<option>Trombone</option>\
+				<option>Orchestral Harp</option>\
+				<option>Timpani</option>\
+				<option>Voice (Ooohs)</option>\
+				<option>Pan Flute</option>\
+				<option>Pizzicato Strings</option>\
+				<option>Synth Strings</option>\
+				<option>Agogo</option>\
+				<option>Piccolo</option>\
+			</select></div>\
+			<img  id='instrumentInfo"+ numberOfVoice + "'>\
+			</div>\
+			";
+
+        $("#voice_container_div").append($voice);
+        var width=90/(+$(this).find('option:selected').text())+"%";
+    }
+    */
+
+/*
+    function doSetTimeout(i) {
+        setTimeout(function() { alert(i); }, 100);
+    }
+
+    for (var i = 1; i <= 2; ++i)
+        doSetTimeout(i);
+
+    */
+    function play() {
+        //setTimeout(function() { alert(i); }, 100);
+        /*
+        for(var i = 0; i< 10 ; i+=2)
+        {
+            setTimeout(colorKey(i), 1000000);
+            //colorKey(i);
+        }
+        */
+        for (var i = 1; i <= 3; i++) {
+            (function(index) {
+                setTimeout(function()
+                {
+                    unColorKeys();
+                    colorKey(index);
+                    document.getElementById("pitchDisplay").innerHTML = document.getElementById("pitchDisplay").innerHTML +"123,";
+                    document.getElementById("durationDisplay").innerHTML = document.getElementById("durationDisplay").innerHTML +"4,";
+                },
+                    i * 1000);
+            })(i);
+        }
+        unColorKeys();
+
+    }
+
+
+
+
+    function colorKey(note)
+    {
+        $("#"+note).css("background","#ee5f5b");
+
+
+    }
+
+    function unColorKeys()
+    {
+        $(".keyWhite").css("background","white");
+        $(".keyBlack").css("background","black");
+    }
+</script>
+</html>

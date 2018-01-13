@@ -1,0 +1,202 @@
+<head>
+    <style>
+        .form-inline .form-group input {
+            width:50px;
+        }
+        #noteCountID input{
+            width:80px;
+        }
+    </style>
+</head>
+<div ng-controller="pitchCtrl">
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width: 25%">
+            <span>Pitch</span>
+        </div>
+
+        <div class="progress-bar progress-bar-warning" style="width: 25%">
+            <span>Duration</span>
+        </div>
+    </div>
+
+    <div class="form-inline">
+        <p>
+            Select Number of Voices:
+            <select class="form-control"
+                    ng-model="numVoices"
+                    ng-options = "x for x in numVoicesArr"
+                    ng-change="updateNumVoice()">
+            </select>
+            <!--Number of Voices count: <input type="text" ng-model="selectedNumVoice"> -->
+            <button type="button" class="btn btn-warning btn-sm" ng-click="addVoice()">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Voice
+            </button>
+            <button type="button" class="btn btn-info btn-sm" ng-click="resetData()()">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reset Data
+            </button>
+
+        </p>
+    </div>
+
+
+
+
+
+    <div id="products" class="row list-group" >
+        <div class="item  col-xs-12 col-lg-12" ng-repeat="v in allVoices">
+            <div id="playBorder{{$index+1}}" class="thumbnail">
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Voice {{$index + 1}}
+                        <button type="button" class="btn btn-danger btn-xs" ng-click="removeVoice($index)" data-toggle="tooltip" data-original-title="Remove selected voice" data-placement="right">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </button>
+                    </h4>
+
+                    <div class="row">
+                        <div class="col-xs-6 col-md-6">
+                            <div class="form-inline">
+                                <div class="form-group" id="noteCountID">
+                                    <label>Note count: &emsp;</label>
+                                    <input type="text" class="form-control" id="noteCoutID" ng-model="v.noteCount" readonly>
+                                </div>
+
+                            </div>
+                            <p></p>
+                            <div class="form-inline">
+                                Select set for duration:
+                                <select class="form-control"
+                                        ng-change="updateDurationSet($index)"
+                                        ng-model="v.selectedDurationSet"
+                                        ng-options="x for x in durationSetNames">
+                                </select>
+
+                                <ng-include src="'views/durationSetTooltip.html'"></ng-include>
+                            </div>
+
+                            <!-- For DNA, RNA -->
+                            <div ng-show="v.selectedDurationSet == 'DNA' || v.selectedDurationSet == 'Protein'">
+                                <p>Duration sequence:
+                                    <textarea ng-model="v.durationSequence" class="form-control" rows="4" cols="50">
+                                    </textarea>
+                                </p>
+                                <p ng-show="v.selectedDurationSet == 'DNA'">
+                                    A : <input type="text" ng-model="durNitrogenBases.A"  required ng-init = "durNitrogenBases.A=0"> <br/>
+                                    T : <input type="text" ng-model="durNitrogenBases.T" required ng-init = "durNitrogenBases.T=1"> <br/>
+                                    C : <input type="text" ng-model="durNitrogenBases.C" required ng-init = "durNitrogenBases.C=2"><br/>
+                                    G : <input type="text" ng-model="durNitrogenBases.G" required ng-init = "durNitrogenBases.G=3"> <br/>
+                                </p>
+
+
+
+                                <p ng-show="v.selectedDurationSet == 'DNA'">
+
+
+                                    <input type="radio"  ng-model="durBioType" value="singleBases" ng-checked="bioType">Single Bases
+                                    <input type="radio"  ng-model="durBioType" value="codons">Codons
+                                    <input type="radio"  ng-model="durBioType" value="duplicates">Duplicates
+                                </p>
+
+                                <!--<button ng-click="convertDuration($index,durNitrogenBases,durBioType)">Convert</button> -->
+
+                                <button type="button" class="btn btn-primary btn-sm" ng-click="convertDuration($index,durNitrogenBases,durBioType)">
+                                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Convert
+                                </button>
+
+                            </div>
+
+                            <p>Duration Input
+                                <textarea ng-model="v.durationInput" class="form-control" rows="4" cols="50" placeholder="Input for Duration">
+
+                            </textarea>
+                            </p>
+
+                            <!-- <p><img HEIGHT="5%" WIDTH="5%" ng-src="./img/settings-icon.png" ng-click="showUtilDurationFunc($index)"/></p> -->
+                            <!-- Trigger the modal with a button -->
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" ng-click="openPitchUtility($index,v.durationInput,'duration')">
+                                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Modify Input
+                            </button>
+                        </div> <!-- end input -->
+                        <div class="col-xs-6 col-md-6">
+
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label>Range &emsp;</label>
+                                    <input class="form-control" type="text" ng-model="v.durationMinRange">
+                                </div>
+                                <div class="form-group">
+                                    <label>&emsp;&emsp;To &emsp;</label>
+                                    <input class="form-control" type="text" ng-model="v.durationMaxRange">
+                                </div>
+                                <div class="form-group">
+                                    <!--Tooltip for input range-->
+                                    <button type="button" class="btn btn-link tooltip-right" data-toggle="tooltip"
+                                            data-original-title="{{durationRangeTooltip}}" data-placement="top">
+                                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true" ></span>
+                                    </button>
+                                    <!-- Button trigger modal -->
+                                    <!--
+                                    <button type="button" class="btn btn-link tooltip-right" data-toggle="modal" data-target="#myModalRythm">
+                                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                                    </button>
+                                    -->
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-music" aria-hidden="true" ng-click="openRythm()"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p></p>
+                            <div class="form-inline">
+                                Select algorithm for duration:
+                                <select class="form-control"
+                                        ng-change="updateDurationMapping($index)"
+                                        ng-model="v.durationAlgorithm"
+                                        ng-options="x for x in algorithmNames">
+                                </select>
+
+                                <ng-include src="'views/durationAlgorithmTooltip.html'"></ng-include>
+
+                            </div>
+
+                            <p>
+                                Duration Mapping :
+                                <textarea ng-model="v.durationMapping" class="form-control" rows="4" cols="50" readonly>
+                            </textarea>
+                            </p>
+                        </div> <!-- end output -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <ng-include src="'views/pitchUtilityModal.html'"></ng-include>
+
+    <nav aria-label="...">
+        <ul class="pager">
+             <li class="previous"><a href="#pitch"><span aria-hidden="true">&larr;</span> Pitch</a></li>
+            <li class="next"><a href="#scaleOptions">Scale Options <span aria-hidden="true">&rarr;</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Modal for rythm image -->
+    <div class="modal fade" id="myModalRythm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Rhythm</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="./img/rythm.PNG" alt="Mountain View">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end modal for rythm -->
+
+</div>

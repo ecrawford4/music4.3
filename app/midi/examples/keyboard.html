@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            width: 800px;
+            height: 200px;
+            display: flex;
+        }
+
+        #kbd {
+            height: 100%;
+            padding: 1%;
+            flex-flow: column;
+            display: flex;
+            flex: 4;
+        }
+
+        #keys {
+            height: 100%;
+            display: flex;
+            flex: 8;
+            justify-content: center;
+
+        }
+
+
+        .note {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .black {
+
+            justify-content: center;
+            position: relative;
+            height: 70%;
+            background-color: #474747;
+            color: white;
+            width: 8%;
+            margin: 0 -4%
+        }
+
+        .white {
+            flex-flow: column;
+            justify-content: flex-end;
+            outline: 2px solid #474747;
+            color: #474747;
+            background-color: #ffffff;
+            padding-bottom: 1%;
+        }
+
+    </style>
+</head>
+<body>
+<div id="kbd">
+
+    <div id="keys">
+
+
+
+    </div>
+
+
+</div>
+<script>
+    var keya = document.getElementById("keys");
+   for (var n = 0; n < 88; n++) {
+        var d = document.createElement("div");
+        var noteNo = n + 21;
+        var blackKeys = [2,5,7,10,12,14,17,19,22,24,26,29,31,34,36,38,41,43,46,48,50,53,55,58,60,62,65,67,70,72,74,77,79,82,84,86];
+        /*decide if the current n is black  or white*/
+        /*
+        var foundBlack = false;
+        for(var i = 0 ;  i< blackKeys.length; i++){
+            if((blackKeys[i]+20) === noteNo)
+            {
+                foundBlack = true;
+                break;
+            }
+        }
+        if(foundBlack)
+        {
+            d.className = "note black";
+        }else {
+            d.className = "note white";
+        }
+        */
+        d.className = "note white";
+
+
+        //d.innerHTML = MIDI.noteToKey[n + 21];
+        //d2.innerHTML = MIDI.noteToKey[n + 21];
+        //d2.addClass('note white');
+        //d.style.cssFloat="left";
+        //colorElements.push(d);
+    keya.appendChild(d);
+
+        //keys.appendChild(d2);
+    }
+</script>
+
+
+</body>
+</html>

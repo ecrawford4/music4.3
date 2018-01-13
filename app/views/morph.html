@@ -1,0 +1,25 @@
+<div ng-controller="pitchCtrl">
+
+
+    <button ng-click="drawCurveTypes(selectIn)">Open chart</button>
+
+    <select  ng-model="selectIn">
+        <option value='1'>1</option>
+        <option value='2'>2</option>
+    </select>
+
+    <!-- Slider for morph -->
+    <md-content>
+        <md-slider-container>
+            <span>Morph: </span>
+            <md-slider flex min="0" max="100" ng-model="morphPercent" aria-label="red" id="red-slider">
+            </md-slider>
+            <md-input-container>
+                <input flex type="number" ng-model="morphPercent" aria-label="red" aria-controls="red-slider">
+            </md-input-container>
+        </md-slider-container>
+    </md-content>
+    <!-- End Slider for morph -->
+    <div id="chart_div"></div>
+</div>
+

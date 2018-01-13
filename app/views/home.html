@@ -1,0 +1,58 @@
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<div ng-controller="pitchCtrl">
+    <div class="jumbotron">
+        <div class="welcome">
+
+            <h2>Welcome!</h2>
+            <h5>CREATE YOUR OWN MUSIC FROM DATA</h5>
+            <p>Algorithms and Interactive Tools for Exploring Music Composition, Analysis, and Interdisciplinary Learning.
+                <br>
+                <br>
+                This Web site has interactive tools that provide a unique learning experience for users, regardless of their musical training. Students of music composition can explore algorithmic composition, while others can create musical representations of models for the purpose of aural interpretation and analysis.
+                Here, the algorithmic process is used in a creative context so that users can convert sequences of numbers into musical sounds.
+                <br><br>
+            </p>
+
+            <!--
+            <select name="Previous Versions" id="previousmenu">
+                <option value="title" disabled selected hidden>Previous Versions</option>
+                <option value="3.1"><a href="http://musicalgorithms.org/3.1">Version 3.1</a></option>
+                <option value="3.0"><a href="http://musicalgorithms.org/3.0">Version 3.0</a></option>
+                <option value="2.0"><a href="http://musicalgorithms.org/2.0">Version 2.0</a></option>
+                <option value="1.0"><a href="http://musicalgorithms.org/1.0">Version 1.0</a></option>
+            </select>
+            -->
+            <select ng-model="prevLink"
+                    ng-change="updateVersion(prevLink.link)"
+                    ng-options = "x.name for x in previousVersions">
+            </select>
+            <!-- {{prevLink.link}} -->
+            <blockquote>
+                <small>
+                    Project Director:
+                    <br>Jonathan N.Middleton, DMA
+                    <br>Department of Music
+                    <br>Professor of Theory and Composition
+                    <br>Interim Department Chair
+                    <br>Eastern Washington University
+                    <br>musicalgorithms.ewu.edu
+                </small>
+            </blockquote>
+
+
+
+        </div>
+
+        <!-- <p><a class="btn btn-primary btn-lg" href="#howto" role="button">Get Started</a></p> -->
+    </div> <!-- End jumbotron -->
+    <div class="panel-footer">
+        Team: Vu Nguyen, Travis Landers, Kyle Darland
+    </div> <!-- End footer -->
+</div>
+
+</body>

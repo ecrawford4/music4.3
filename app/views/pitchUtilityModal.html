@@ -1,0 +1,171 @@
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Data Workspace</h4>
+            </div>
+            <div class="modal-body">
+
+                <p>
+                    Input: <br/>
+                    <textarea class="form-control" ng-model="modalInput" rows="4" cols="115"></textarea>
+                </p>
+               <!-- {{modalInput}} -->
+
+
+
+                <div>
+
+
+                <!--<p>Formatted Pitch input : <textarea ng-model="v.formattedPitchInput" ng-disabled="true"></textarea></p> -->
+                <p>
+                    <input type="radio"  ng-model="utilFunc.main" value="reverse">Reverse
+                    <input type="radio"  ng-model="utilFunc.main" value="invert">Invert
+                    <input type="radio"  ng-model="utilFunc.main" value="parseByRange">Parse by Range
+                    <input type="radio"  ng-model="utilFunc.main" value="sampleRate">Sample Rate
+                    <input type="radio"  ng-model="utilFunc.main" value="addCommas">Add Commas
+                    <input type="radio"  ng-model="utilFunc.main" value="replace">Replace
+                    <input type="radio"  ng-model="utilFunc.main" value="multiplyDecimals">Multiply Decimals
+                    <input type="radio"  ng-model="utilFunc.main" value="ascIIConversion">ASCII Conversion <br/>
+                    <input type="radio"  ng-model="utilFunc.main" value="columnConversion">Column Conversion <br/>
+                    <!--<input type="radio"  ng-model="utilFunc.main" value="convertSilence">Convert to Silence note -->
+                </p>
+
+                <!-- Begin Invert -->
+
+                <div ng-show="utilFunc.main == 'invert'">
+                    <input type="radio"  ng-model="utilFunc.invertType" value="invertAvg">Invert via Average
+                    <input type="radio"  ng-model="utilFunc.invertType" value="invertValue">Invert around a custom value
+                </div>
+
+                <div ng-show="utilFunc.invertType == 'invertValue' && utilFunc.main == 'invert' ">
+                    Enter your value 222: <input type="text" ng-model="utilFunc.customVal">
+                </div>
+
+                <!-- End Invert -->
+
+                <!-- Begin Parse by Range-->
+                <div ng-show="utilFunc.main == 'parseByRange'">
+                    <p>Filter the notes by a range of values.
+                        All notes that do not fall in the range become zero. </p>
+                    Low: <input type="text" ng-model="utilFunc.low">
+                    High: <input type="text" ng-model="utilFunc.high">
+                </div>
+                <!-- End Parse by Range-->
+
+                <!-- Sample Rate -->
+                <div ng-show="utilFunc.main == 'sampleRate'">
+                    <p>Reduce the stream size by sampling every X note via the sampling types below.</p>
+                    <p> Sample Rate : <input type="text" ng-model="utilFunc.sampleRateNo"> </p>
+                    <p>Sample type :
+                        <input type="radio"  ng-model="utilFunc.sampleRateType" value="average">Average
+                        <input type="radio"  ng-model="utilFunc.sampleRateType" value="median">Median
+                        <input type="radio"  ng-model="utilFunc.sampleRateType" value="actual">Actual
+                    </p>
+
+                </div>
+                <!-- End Sample Rate -->
+
+                <!-- Begin Add Commas -->
+                <div ng-show="utilFunc.main == 'addCommas'">
+                    <p>
+                        These tools will help separate the data for use in other functions.<br/>
+                        This function is best used for data that isn't separated by anything and needs commas.<br/>
+                        If the data is already separated by something that isn't a comma, consider using the replace utility instead.
+
+                    </p>
+                    Insert a comma every: <input type="text" ng-model="utilFunc.comma">
+
+                </div>
+
+                <!-- Begin Replace -->
+                <div ng-show="utilFunc.main == 'replace'">
+                    <p>Replace characters in the stream.</p>
+                    <p> Replace <input type="text" ng-model="utilFunc.replaceCharFrom">
+                        with <input type="text" ng-model="utilFunc.replaceCharTo">
+                    </p>
+
+                </div>
+
+                <!-- End Replace-->
+
+                <!-- Begin Multiply Decimals -->
+                <div ng-show="utilFunc.main == 'multiplyDecimals'">
+                    <p>Use these tools to turn decimal numbers into a more playable form.</p>
+                    <p>Multiply with <input type="text" ng-model="utilFunc.multiplyNo"></p>
+                    <p ng-init="utilFunc.multiplyType='round'">
+                        <input type="radio"  ng-model="utilFunc.multiplyType" value="round">Round
+                        <input type="radio"  ng-model="utilFunc.multiplyType" value="floor">Floor
+                        <input type="radio"  ng-model="utilFunc.multiplyType" value="ceiling">Ceiling
+
+                    </p>
+                </div>
+
+                <!-- End Multiply Decimals-->
+
+                <!-- Begin ASCII Conversion -->
+                <div ng-show="utilFunc.main == 'ascIIConversion'">
+                    <p>This tool converts comma separated keyboard characters to corresponding ASCII values. </p>
+                    <p>You can add commas to your source material by using the "Add Commas" or "Replace" tools above</p>
+
+                </div>
+
+                <!-- End ASCII Conversion-->
+
+                <!-- End Multiply Decimals-->
+
+                <!-- Begin Column Conversion -->
+                <div ng-show="utilFunc.main == 'columnConversion'">
+                    <p>This tool to filter data in column. </p>
+                    <p>Use column number: <input type="text" ng-model="utilFunc.columnNo" ng-init="utilFunc.columnNo = 2"></p>
+                    <p>Decimal Precision: <input type="text" ng-model="utilFunc.decimalPrecision" ng-init="utilFunc.decimalPrecision = 0"></p>
+                    <!--<p><input type="checkbox" ng-model="utilFunc.checkCommaPlace" ng-init="utilFunc.checkCommaPlace=false">Commas are used for placeholders </p>
+                    -->
+                </div>
+
+                <!-- End Column Conversion-->
+
+                <!-- Begin Add Silence -->
+                <div ng-show="utilFunc.main == 'convertSilence'">
+                    <p>Use these tools to convert to silence note</p>
+                    <p> Convert all <input type="text" ng-model="utilFunc.silenceNo"> to silence </p>
+
+                </div>
+
+                    <!-- End Multiply Decimals-->
+
+
+                <button class="btn btn-success" ng-click="changeInputModal(modalInput, utilFunc)">
+                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Get Formatted Input
+                </button>
+                <!-- <button ng-click="reverse($index)">Reverse</button> -->
+
+                <!-- <button ng-click="dismiss($index)">Dismiss</button><br/> -->
+                    <!--
+                <button ng-click="saveInput($index)">Apply</button>
+                <button ng-click="discard($index)">Discard</button>
+
+               -->
+            </div>
+                <p>
+                    Formatted Input: <br/>
+                    <textarea class="form-control" ng-model="modalInputFormatted" rows="4" cols="115" ng-disabled="true"></textarea>
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="applyInputModal(modalInputFormatted)">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>Apply
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>Close
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

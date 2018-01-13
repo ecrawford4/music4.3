@@ -1,0 +1,148 @@
+
+<div ng-controller="pitchCtrl">
+    <div class="progress">
+        <div class="progress-bar progress-bar-success" style="width: 25%">
+            <span>Pitch</span>
+        </div>
+
+        <div class="progress-bar progress-bar-warning progress-bar" style="width: 25%">
+            <span>Duration</span>
+        </div>
+
+        <div class="progress-bar progress-bar-danger" style="width: 25%">
+            <span>Scale Options</span>
+        </div>
+    </div>
+    <button type="button" class="btn btn-info btn-sm" ng-click="resetData()()">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reset Data
+    </button>
+    <div id="products" class="row list-group" >
+        <div class="item  col-xs-6 col-lg-6" ng-repeat="v in allVoices">
+            <div id="playBorder{{$index+1}}" class="thumbnail">
+                <div class="caption">
+                    <h4 class="group inner list-group-item-heading">
+                        Voice {{$index + 1}}
+                        Note Count: {{v.noteCount}}
+                    </h4>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+
+                            <div class="form-inline">
+                                <p>
+                                    Using:
+                                    <select class="form-control"
+                                            ng-model="v.scaleType"
+                                            ng-init="v.scaleType='scales'"
+                                            ng-change="updatedCurrentIndex($index)">
+                                        <option value="scales">Scale</option>
+                                        <option value="morph">Morph</option>
+                                    </select>
+                                </p>
+                            </div>
+
+                            <!-- Scale By:	 	Key-->
+                            <div ng-if="v.scaleType == 'scales'">
+                                <div class="form-inline">
+                                    <p>
+                                        Scale By:
+                                        <select class="form-control"
+                                                ng-change="scaleOptionsChanged($index)"
+                                                ng-model="v.scaleOption"
+                                                ng-options="x for x in scaleNames">
+                                        </select>
+
+                                        Key:
+
+                                        <select class="form-control"
+                                                ng-change="scaleOptionsChanged($index)"
+                                                ng-model="v.keyOptionIndex"
+                                                ng-options="keyNames.indexOf(x) as x for x in keyNames">
+                                        </select>
+                                    </p>
+                                </div>
+
+
+                            </div>
+                            <div ng-if="v.scaleType == 'morph'" id="morph">
+                                <!-- Trigger the modal with a button -->
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal">
+                                    <span class="glyphicon glyphicon-folder-open"></span> Open Morph
+                                </button>
+                            </div>
+
+                            <p>
+                                Final Pitch Mapping :
+                                <textarea ng-model="v.finalPitchMapping" class="form-control" rows="4" cols="50" readonly></textarea>
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Morph</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- <button ng-click="drawCurveTypes(selectIn)">Open chart</button> -->
+                    <select class="form-control" ng-model="songMorph" ng-change="drawCurveTypes(selectIn)">
+                        <option value="">--Select Song--</option>
+                        <option value="beethoven">Beethoven's 9th</option>
+                        <option value="finlandia">Sibelius' Finlandia</option>
+                    </select>
+
+                    <div ng-show="songMorph == 'beethoven' || songMorph == 'finlandia'">
+                        <!-- Slider for morph -->
+                        <md-content>
+                            <md-slider-container>
+                                <span>Morph: </span>
+                                <md-slider flex min="0" max="100" ng-model="morphPercent" aria-label="red" id="red-slider">
+                                </md-slider>
+                                <md-input-container>
+                                    <input flex type="number" ng-model="morphPercent" aria-label="red" aria-controls="red-slider">
+                                </md-input-container>
+                            </md-slider-container>
+                        </md-content>
+                        <!-- End slider for morph -->
+                        <div id="chart_div" ></div>
+
+                        <!--{{afterMorph}} -->
+                        <p>
+                            Pitch mapping :
+                            <textarea ng-model="afterMorph" class="form-control"  rows="4" cols="115" readonly></textarea>
+                        </p>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="applyMorph()">
+                        <span class="glyphicon glyphicon-ok"></span> Apply
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                        <span class="glyphicon glyphicon-remove"></span>Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous"><a href="#duration"><span aria-hidden="true">&larr;</span> Duration</a></li>
+            <li class="next"><a href="#play">Play <span aria-hidden="true">&rarr;</span></a></li>
+        </ul>
+    </nav>
+
+</div>
