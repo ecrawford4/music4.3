@@ -223,22 +223,6 @@ angular.module("myApp")
 
 
         };
-
-        /*
-        $scope.createLightKeyboard = function () {
-            var colors = document.getElementById("colors");
-            var colorElements = [];
-            for (var n = 0; n < 88; n++) {
-                var d = document.createElement("div");
-                d.style.cssFloat="left";
-                d.innerHTML = MIDI.noteToKey[n + 21];
-                colorElements.push(d);
-                colors.appendChild(d);
-            }
-
-        }
-*/
-
     }).directive('toggle', function(){
     return {
         restrict: 'A',
