@@ -117,25 +117,13 @@
                                     <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Convert
                                 </button>
 
-                                <!-- <button ng-click="convert($index,nitrogenBases,bioType)">Convert</button> -->
+
 
                             </div>
-                            <!--
-                            <form name="form">
-                                <label for="regex">Set a pattern (regex string): </label>
-                                <input type="text" ng-model="regex" id="regex" />
-                                <br>
-                                <label for="input">This input is restricted by the current pattern: </label>
-                                <textarea type="text" ng-model="model" id="input" name="input" ng-pattern="regex"></textarea>
-                                <hr>
-                                input valid? = <code>{{form.input.$valid}}</code><br>
-                                model = <code>{{model}}</code>
-                            </form>
-                            -->
+
                             <p>Pitch input: <!--{{v.pitchInput}} -->
                                 <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
                             </p>
-                            <!--  <p><img HEIGHT="5%" WIDTH="5%" ng-src="./img/settings-icon.png" ng-click="showUtilFunc($index)"/></p> -->
 
                             <!-- Trigger the modal with a button -->
                             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" ng-click="openPitchUtility($index,v.pitchInput,'pitch')">
@@ -195,17 +183,8 @@
     <ng-include src="'views/pitchUtilityModal.html'"></ng-include>
 
 
-
-    <!-- <button ng-click="save()">Save Voices</button> -->
-    <!-- <img  ng-src="./img/add-icon.png" ng-click="addVoice()" /> -->
-
-
-    <!-- <button ng-click="addVoice()">Add Voice</button> -->
-    <!--<img  ng-src="./img/restart-icon.png" ng-click="resetData()" /> -->
-    <!--<button ng-click="resetData()">Restart</button> -->
     <nav aria-label="...">
         <ul class="pager">
-            <!-- <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li> -->
             <li class="next"><a href="#duration">Duration <span aria-hidden="true">&rarr;</span></a></li>
         </ul>
     </nav>
