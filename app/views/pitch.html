@@ -121,8 +121,14 @@
 
                             </div>
 
-                            <p>Pitch input: <!--{{v.pitchInput}} -->
-                                <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
+                            <p>Pitch input:
+                                <div ng-show="v.selectedSet == 'Custom'">
+                                    <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Please enter your own set of input..."></textarea>
+                                </div>
+                                <div ng-hide="v.selectedSet == 'Custom'">
+                                    <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
+                                </div>
+
                             </p>
 
                             <!-- Trigger the modal with a button -->

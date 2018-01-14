@@ -35,9 +35,6 @@ function  generateInputSet(setType,noteCount) {
         case "Protein":
             result = getProtein (noteCount);
             break;
-        case "Custom":
-            result = "Please enter your own set of input...";
-            break;
     }
     return result;
 
