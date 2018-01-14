@@ -17,27 +17,38 @@
                <!-- {{modalInput}} -->
 
 
-
                 <div>
 
 
                 <!--<p>Formatted Pitch input : <textarea ng-model="v.formattedPitchInput" ng-disabled="true"></textarea></p> -->
                 <p>
-                    <input type="radio"  ng-model="utilFunc.main" value="reverse">Reverse
-                    <input type="radio"  ng-model="utilFunc.main" value="invert">Invert
-                    <input type="radio"  ng-model="utilFunc.main" value="parseByRange">Parse by Range
-                    <input type="radio"  ng-model="utilFunc.main" value="sampleRate">Sample Rate
-                    <input type="radio"  ng-model="utilFunc.main" value="addCommas">Add Commas
-                    <input type="radio"  ng-model="utilFunc.main" value="replace">Replace
-                    <input type="radio"  ng-model="utilFunc.main" value="multiplyDecimals">Multiply Decimals
-                    <input type="radio"  ng-model="utilFunc.main" value="ascIIConversion">ASCII Conversion <br/>
-                    <input type="radio"  ng-model="utilFunc.main" value="columnConversion">Column Conversion <br/>
+                    <input type="radio"  ng-model="utilFunc.main" value="reverse"> Reverse
+                    <input type="radio"  ng-model="utilFunc.main" value="invert"> Invert
+                    <input type="radio"  ng-model="utilFunc.main" value="parseByRange"> Parse by Range
+                    <input type="radio"  ng-model="utilFunc.main" value="sampleRate"> Sample Rate
+                    <input type="radio"  ng-model="utilFunc.main" value="addCommas"> Add Commas
+                    <input type="radio"  ng-model="utilFunc.main" value="replace"> Replace
+                    <input type="radio"  ng-model="utilFunc.main" value="multiplyDecimals"> Multiply Decimals
+                    <input type="radio"  ng-model="utilFunc.main" value="ascIIConversion"> ASCII Conversion <br/>
+                    <input type="radio"  ng-model="utilFunc.main" value="columnConversion"> Column Conversion <br/>
                     <!--<input type="radio"  ng-model="utilFunc.main" value="convertSilence">Convert to Silence note -->
                 </p>
+
+                <!-- Begin Reverse -->
+                    <div ng-show="utilFunc.main == 'reverse'">
+                        <p>Reverse the order of the data.</p>
+                    </div>
+                <!-- End Reverse -->
 
                 <!-- Begin Invert -->
 
                 <div ng-show="utilFunc.main == 'invert'">
+                    <p>Invert the values of the notes around a value, or around the average.</p>
+                    <p>High notes will become low notes, and low notes will become high notes.</p>
+                    <p>
+                        WARNING: If you choose to invert around your own value, be careful that
+                        the resulting notes don't fall out of the playable range!
+                    </p>
                     <input type="radio"  ng-model="utilFunc.invertType" value="invertAvg">Invert via Average
                     <input type="radio"  ng-model="utilFunc.invertType" value="invertValue">Invert around a custom value
                 </div>
@@ -120,7 +131,7 @@
 
                 <!-- Begin Column Conversion -->
                 <div ng-show="utilFunc.main == 'columnConversion'">
-                    <p>This tool to filter data in column. </p>
+                    <p>This tool to filter data in column. Column are separated by whitespaces. </p>
                     <p>Use column number: <input type="text" ng-model="utilFunc.columnNo" ng-init="utilFunc.columnNo = 2"></p>
                     <p>Decimal Precision: <input type="text" ng-model="utilFunc.decimalPrecision" ng-init="utilFunc.decimalPrecision = 0"></p>
                     <!--<p><input type="checkbox" ng-model="utilFunc.checkCommaPlace" ng-init="utilFunc.checkCommaPlace=false">Commas are used for placeholders </p>
