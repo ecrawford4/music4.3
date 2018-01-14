@@ -315,33 +315,22 @@ function  getProcessedInput(demoInput,check,columnNo,decimalDigits) {
 
 }
 
+/*
+Convert input with multilple lines and columns. Columns separated by spaces
+ */
 function  columnConversion(inputTemp,columnNo,decimalPrecision) {
     var result = [];
-    columnNo = parseInt(columnNo);
-    decimalPrecision = parseInt(decimalPrecision);
-    var lines = inputTemp.trim().split(/\s*[\r\n]+\s*/g);
-    var arrAllLines = [];
-    for(var i in lines)
-    {
-        var arr = lines[i].trim().split(/\s+/g);
-        arrAllLines.push(arr);
-    }
+    inputTemp = inputTemp.replace(/(\r\n|\n|\r)/gm, "|"); //convert all columns to 1 string separated by |
+    var lineArr = inputTemp.split("|");
 
-    //var str = "Column " + columnNo + "\n";
-
-    for(var i in arrAllLines)
+    for(var i = 0; i < lineArr.length; i++)
     {
-        var temp = arrAllLines[i][columnNo-1].split("");
-        var dotIndex = temp.indexOf(".");
-        if(dotIndex > -1){
-            temp.splice(dotIndex,1);
-        }
-        temp = temp.slice(0,dotIndex+decimalPrecision);
-        var convertedValue = parseInt(temp.join('')); //join value in array and convert to int
-        //console.log(convertedValue);
-        result.push(convertedValue);
+        var eachLineS = lineArr[i];
+        eachLineS = eachLineS.replace(/\s+/g, " ");
+        eachLineS = eachLineS.trim();
+        var eachLineA = eachLineS.split(" ");
+        result.push( parseFloat(eachLineA[columnNo-1]).toFixed(decimalPrecision));
     }
-    //alert(str);
     return result;
 }
 
