@@ -1,8 +1,7 @@
 function getDownloadData(tempo, allVoices) {
-
-    //alert("into getDownloadData" +allVoices.finalPitchMapping);
     return createMidi("",tempo, allVoices);
 }
+
 function createMidi(type,tempo, allVoices)
 {
 
@@ -14,20 +13,16 @@ function createMidi(type,tempo, allVoices)
     var voiceNum = 1;
     //alert("bpm set at: "+ tempo);
     var microTempo=60000000/tempo;
-
     var division=24; //change to 480 when done
     if(type=='MTC')
-        division=24
+        division=24;
 
     var basedata = 'MFile 0 1 '+division+'|MTrk|0 TimeSig 4/4 24 8|0 Tempo '+microTempo+'|0 Meta TrkEnd|TrkEnd';
     var basedataArray=basedata.split('|');
 
     var mididata;
     mididata =basedataArray.join('\r\n');
-    //window.alert(mididata);
-    //window.alert(mididata);
-    //var encodedData = window.btoa(mididata);
-    //window.alert(encodedData);
+
     /*
      for(i=0; i<voiceNum;i++)
      {
@@ -42,26 +37,12 @@ function createMidi(type,tempo, allVoices)
         var track=createTrack(basedataArray,allVoices[i], channel, microTempo, type);
         mididata=mididata+'\r\n'+track;
     }
-
-
-
-    //alert(mididata);
     return mididata;
-    //console.log(mididata);
-    //console.log(window.btoa(mididata));
-    //var encodedData = window.btoa(mididata);
-    //alert(encodedData);
-    //document.forms['download'].notedata.value=mididata;
-
-
-
-
-
 }
 
 function createTrack( basedataArray, voice,channel,microTempo,type)
 {
-        //0 PrCh ch=10 p=1 For change piano
+    //0 PrCh ch=10 p=1 For change piano
     var nThisDuration;
     //var nowDur = 0;
     var pitchArray = voice.finalPitchMapping;
@@ -119,11 +100,12 @@ function createTrack( basedataArray, voice,channel,microTempo,type)
     return trackdataArray.join('\r\n');
 }
 
+/* Convert durationMapping into tick temp
+     Because original 0 in duration will not be play so it should be mapped to music tick
+*/
 function getDurationMappingScale(durationMapping)
 {
-    /* Convert durationMapping into tick temp
-     * Because original 0 in duration will not be play so it should be mapped to music tick
-     * */
+
     //var noteDurations = [2,3,4,6,8,12,16,24,32,48];
     var noteDurations = [6,9,12,18,24,36,48,72,96,144];
     var durationMappingScale = new Array(durationMapping.length);

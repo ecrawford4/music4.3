@@ -1,6 +1,6 @@
 function convertInputFormat(selectedSet,arrayString)
 {
-    arrayString = arrayString.replace(/(\r\n|\n|\r)/gm," ");
+    arrayString = arrayString.replace(/(\r\n|\n|\r)/gm," "); //remove line breaks
     arrayString = arrayString.toUpperCase();
     arrayString = arrayString.replace(/[^A-Z]/g, ''); //remove any  non-alphabetic char
     //arrayString = arrayString.replace(/\s+/g, '');
@@ -37,8 +37,6 @@ function convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
 
     if(selectedSet === "Protein")
     {
-
-
         var proteinValues=[-2.1,-1.7,-1.3,-1.1,-0.7,-0.7,-0.5,0.0,0.1,0.3,0.5,0.5,
                             0.8,0.9,1.2,1.2,1.8,1.9,2.0,2.8];//Double
         var proteinNames = "WFLIMYVCPTASQNGHREDK";
@@ -75,7 +73,6 @@ function convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
         }
 
         //Convert values to according bioType
-
         switch (bioType) {
             case "singleBases":
                 //result not change
@@ -88,11 +85,7 @@ function convert(selectedSet,arrayString,nitrogenBases,bioType,proteinValues) {
                 break;
         }
     }
-
-    //alert(result);
     return result;
-    //return arrayString;
-
 }
 
 //Group into 3
@@ -118,9 +111,6 @@ function codonsConvert(result)
 //Count executive repitive values
 function duplicatesConvert(arrayString)
 {
-
-    //var demoA = ["A","A","C","A","T","G","A","G","A","C","C","C"];
-    //alert(demoA);
     var newResult = [];
     var stop = false;
     var i=0;
@@ -141,17 +131,12 @@ function duplicatesConvert(arrayString)
                 }
             }else
             {
-
                 i = j;
-                //alert(i);
                 break;
             }
 
         }
         newResult.push(counter);
     }
-    //2,4,6,8
-//2,1,1,1,3,2,1
-    //alert(newResult);
     return newResult;
 }

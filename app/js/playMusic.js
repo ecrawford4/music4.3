@@ -5,7 +5,6 @@ function playMusic(finalPitchArray,durationMapping,index,instrument,tempo)
     var note = 50; // the MIDI note
     var velocity = 127; // how hard the note hits
     //var speedRate = 0.09;
-    //window.alert(instrument.name +" " + instrument.no);
     //MIDI.programChange(index, instrument.no); // set channel index to instrument value in array
     //MIDI.programChange(index, 24);
     //window.alert(MIDI.GM.byName[instrument.name].number);
@@ -21,8 +20,7 @@ function playMusic(finalPitchArray,durationMapping,index,instrument,tempo)
 
     var startTime = 0;
     var endTime = 0;
-    //var finalPitchArray=[50,60,70,80,22];
-    //var durationMappingScale=[1,2,3,6,1];
+
     /* Convert durationMapping into tick temp
      * Because original 0 in duration will not be play so it should be mapped to music tick
      * */
@@ -50,26 +48,19 @@ function playMusic(finalPitchArray,durationMapping,index,instrument,tempo)
             //track.add(createNoteOnEvent(pitchValue+20, startTime));
             startTime += durationMappingScale[i]/tempo;
             endTime = startTime;
-
             MIDI.noteOff(index, pitchValue + 20, endTime);
         }
-
-
-
-
     }
 }
 
 function playAll(allVoices,tempo)
 {
-    //alert("play all");
     //var instrumentArray = {"acoustic_grand_piano": 0, "synth_drum": 118};
     var velocity = 127; // how hard the note hits
     //var speedRate = 0.09;
     var speedRate = 2;
     for(var k = 0; k < allVoices.length; k++)
     {
-
         var obj = allVoices[k];
         var muted = obj.muted;
         if(muted == 0)
@@ -88,8 +79,6 @@ function playAll(allVoices,tempo)
              * Because original 0 in duration will not be play so it should be mapped to music tick
              * */
             var durationMappingScale = getDurationMappingScale(durationMapping);
-
-            //alert(durationMappingScale);
             //End converting duration tick
 
             /**
@@ -99,11 +88,6 @@ function playAll(allVoices,tempo)
              * timeout needs to  be, 0, 2=2+0, 5 = 2+3, 9 = 4 +5
              */
             var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
-
-
-           //alert("new :" + durationMappingScaleForTimeOut);
-
-
 
             for(var i = 0 ; i< finalPitchArray.length ; i++)
             {
@@ -126,10 +110,36 @@ function playAll(allVoices,tempo)
                 })(i,k,tempo);
 
             }
+
+
         }
 
     }
+/*
+    var voice_combine = [[1,1],[23,18],[0,18],[45,0],[0,28],[66,0],[0,35],[88,0],[0,45],[0,57],[0,66],[0,78],[0,88]];
+    var timeout_combine = [[0,0],[6,6],[0,15],[18,0],[0,27],[30,0],[0,45],[54,0],[0,69],[0,105],[0,153],[0,159],[0,168]];
+    for(var i = 0; i < 13; i ++)
+    {
+        var voiceE = voice_combine[i];
+        var timeOutE = timeout_combine[i];
+        alert("here");
+        for(var j = 0; j<2; j++)
+        {
+            (function () {
+                setTimeout(function () {
+                        //alert("here")
+                        unColorKeys();
+                        colorKey(voiceE[0],0);
+                        document.getElementById("pitchDisplay").innerHTML = document.getElementById("pitchDisplay").innerHTML + " " +voiceE[0] ;
 
+                    },
+                    timeOutE[0]*(1000/10));
+            })();
+        }
+
+
+    }
+*/
     /*
     * Play light
     * */
@@ -174,11 +184,13 @@ function playAll(allVoices,tempo)
     /*End play ligh*/
 }
 
-function getDurationMappingScale(durationMapping)
-{
-    /* Convert durationMapping into tick temp
+/* Convert durationMapping into tick temp
      * Because original 0 in duration will not be play so it should be mapped to music tick
      * */
+/*
+function getDurationMappingScale(durationMapping)
+{
+
     var noteDurations = [2,3,4,6,8,12,16,24,32,48];
     var durationMappingScale = new Array(durationMapping.length);
     for(var i = 0; i< durationMappingScale.length ; i++)
@@ -187,7 +199,7 @@ function getDurationMappingScale(durationMapping)
     }
     return durationMappingScale;
 }
-
+*/
 function getDurationMappingScaleForTimeOut(durationMappingScale)
 {
     var durationMappingScaleForTimeOut = [];
@@ -217,44 +229,6 @@ function unColorKeys()
     $(".keyBlack").css("background","black");
 }
 
-function playAll2(allVoices,tempo)
-{
-    //alert(gl);
-    /*
-    var delay = 0; // play one note every quarter second
-    var note = 80; // the MIDI note
-    var velocity = 127; // how hard the note hits
-    // play the note
-    MIDI.programChange(0,0);
-    MIDI.setVolume(0, 127);
-    MIDI.noteOn(0, note, velocity, 0);
-    MIDI.noteOff(0, note, 10);
-    */
-    song.push("data:audio/mid;base64,TVRoZAAAAAYAAQACABhNVHJrAAAAEwD/WAQEAhgIAP9RAw9CQAD/LwBNVHJrAAAAVwDAAQCQFngCgBZ4AJAfeAOAH3gAkCl4A4ApeACQM3gEgDN4AJA8eAaAPHgAkEZ4DIBGeACQT3gDgE94AJBZeBCAWXgAkGN4AoBjeACQbHgQgGx4AP8vAA==");
-    player = MIDI.Player;
-    player.timeWarp = 1; // speed the song is played back
-    player.loadFile(song[songid++ % song.length]);
-    player.start();
-    var d = document.getElementById("pausePlayStop");
-
-    if(player.playing)
-    {
-        d.src = "./img/pause.png";
-    }else {
-        d.src = "./img/play.png";
-    }
-
-}
-
-function pause() {
-
-    MIDI.Player.pause(true);
-}
-
-function resume() {
-    MIDI.Player.resume();
-}
-
 
 var resumeF = false;
 
@@ -273,132 +247,4 @@ function createKeyboard(){
         }*/
 
     }
-
 }
-
-function pausePlayStop(tempo,stop,loadData) {
-    //d.src = "./img/pause.png";
-    //alert(loadData);
-    //console.log(loadData);
-    var d = document.getElementById("playPauseBtn");
-    d.src = "./img/pause.png";
-   if(typeof player === 'undefined' || player.currentTime == player.endTime ||player.currentTime == 0 )
-   {
-       song.pop();
-       var songData = "data:audio/mid;base64,"+loadData;
-       //song.push("data:audio/mid;base64,TVRoZAAAAAYAAQACABhNVHJrAAAAEwD/WAQEAhgIAP9RAw9CQAD/LwBNVHJrAAAAVwDAAQCQFngCgBZ4AJAfeAOAH3gAkCl4A4ApeACQM3gEgDN4AJA8eAaAPHgAkEZ4DIBGeACQT3gDgE94AJBZeBCAWXgAkGN4AoBjeACQbHgQgGx4AP8vAA==");
-       song.push(songData);
-       player = MIDI.Player;
-       player.timeWarp = 1; // speed the song is played back
-       player.BPM = tempo;
-       player.loadFile(song[0]);
-       /// load up the piano keys
-
-       MIDI.loader = new sketch.ui.Timer;
-
-       var colors = document.getElementById("colors");
-       colors.textContent = '';
-       var colorElements = [];
-       for (var n = 0; n < 88; n++) {
-           var d = document.createElement("div");
-           d.style.cssFloat="left";
-           d.innerHTML = MIDI.noteToKey[n + 21];
-
-
-            if(colorElements.length <= 88 ){
-                colorElements.push(d);
-                colors.appendChild(d);
-            }
-
-       }
-
-       var colorMap = MIDI.Synesthesia.map();
-
-       player.addListener(function(data) {
-           var pianoKey = data.note - 21;
-           var d = colorElements[pianoKey];
-           if (d) {
-               if (data.message === 144) {
-                   var map = colorMap[data.note - 27];
-                   if (map) d.style.background = map.hex;
-                   d.style.color = "#fff";
-               } else {
-                   d.style.background = "";
-                   d.style.color = "";
-               }
-           }
-       });
-
-       MIDIPlayerPercentage(player);
-   }
-
-   if(stop)
-   {
-       player.stop();
-       d.src = "./img/play.png";
-   }else {
-       if(player.playing)
-       {
-           player.pause();
-           d.src = "./img/play.png";
-       }else {
-           console.log("stop :" + stop);
-           d.src = "./img/pause.png";
-           player.start();
-
-       }
-
-
-   }
-}
-
-var MIDIPlayerPercentage = function(player) {
-    // update the timestamp
-    var time1 = document.getElementById("time1");
-    var time2 = document.getElementById("time2");
-    var capsule = document.getElementById("capsule");
-    var timeCursor = document.getElementById("cursor");
-    //
-    eventjs.add(capsule, "drag", function(event, self) {
-        eventjs.cancel(event);
-        player.currentTime = (self.x) / 420 * player.endTime;
-        if (player.currentTime < 0) player.currentTime = 0;
-        if (player.currentTime > player.endTime) player.currentTime = player.endTime;
-        if (self.state === "down") {
-            player.pause(true);
-        } else if (self.state === "up") {
-            player.resume();
-        }
-    });
-    //
-    function timeFormatting(n) {
-        var minutes = n / 60 >> 0;
-        var seconds = String(n - (minutes * 60) >> 0);
-        if (seconds.length == 1) seconds = "0" + seconds;
-        return minutes + ":" + seconds;
-    };
-
-    player.setAnimation(function(data, element) {
-        var percent = data.now / data.end;
-        var now = data.now >> 0; // where we are now
-        var end = data.end >> 0; // end of song
-        if (now === end) { // go to next song
-            var id = ++songid % song.length;
-            //player.loadFile(song[id], player.start); // load MIDI
-        }
-        // display the information to the user
-        timeCursor.style.width = (percent * 100) + "%";
-        time1.innerHTML = timeFormatting(now);
-        time2.innerHTML = "-" + timeFormatting(end - now);
-    });
-};
-
-
-// Begin loading indication.
-
-var player;
-// MIDI files from Disklavier World
-var songid = 0;
-var song =
-    [
-    ];

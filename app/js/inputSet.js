@@ -1,4 +1,3 @@
-
 function  generateInputSet(setType,noteCount) {
     var result = [];
     switch (setType) {

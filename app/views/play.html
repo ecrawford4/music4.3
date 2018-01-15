@@ -30,7 +30,6 @@
         </p>
     </div>
 
-
     <!-- <button ng-click="download(tempo)">Download MIDI</button> -->
 
     <form id="download" action="php/createMidi.php" method="post">
@@ -51,14 +50,6 @@
                     </h4>
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
-                            <!--<p> {{loadData}}</p> -->
-
-                            <!--
-                            <p>Pitch input: {{v.pitchInput}}</p>
-
-                            <p>Duration Input {{v.durationInput}} </p>
-                            <p>Pitch Mapping : {{v.pitchMapping}} </p>
-                            -->
                             <p>
                                 <label> Pitch: </label>
                                 <textarea ng-model="v.finalPitchMapping" class="form-control" rows="4" cols="50" readonly>
@@ -78,15 +69,7 @@
                                 </p>
                                 <label> Mute Track: </label>
                                 <input type="checkbox" ng-model="v.muted" />
-                                <!--
-                                <button type="button" class="btn btn-primary btn-sm" ng-click="play($index,tempo)" ng-disabled="v.muted">
-                                    <span class="glyphicon glyphicon-play"></span>
-                                </button>
-                                -->
                             </div>
-
-
-
                         </div> <!-- end input -->
 
                     </div>
@@ -101,18 +84,7 @@
         <span class="glyphicon glyphicon-play"></span> Play All
     </button>
     <br/><br/>
-    <!-- <button ng-click="playAll(tempo)">Play All</button> -->
-    <!--<button ng-click="playAll2(tempo)">Play All 2</button> <br/><br/> -->
-    <!-- <button ng-click="pause()">Pause</button> <br/><br/>
-    <button ng-click="resume()">Resume</button> <br/><br/> -->
-    <!-- pause = 1, play =2 , stop =3 -->
-    <!--
-    <p>
-        <input type="image" src="./img/play.png" align="absmiddle" value="play" ng-click="pausePlayStop(tempo,false)" id="playPauseBtn">
 
-        <input type="image" src="./img/stop.png" align="absmiddle" value="stop" ng-click="pausePlayStop(tempo,true)" id="stopBtn">
-    </p>
-    -->
     <md-content>
         <md-slider-container>
             <span> <label> Tempo: </label></span>
@@ -123,6 +95,7 @@
             </md-input-container>
         </md-slider-container>
     </md-content>
+    <!-- div for keyboard -->
     <div>
         <div id="pianoBody">
             <div id="o00" class="octave">
@@ -243,14 +216,11 @@
         </div>
         <p>
     </div>
+    <!-- End div for keyboard -->
 <br/><br/>
     <nav aria-label="...">
         <ul class="pager">
             <li class="previous"><a href="#scaleOptions"><span aria-hidden="true">&larr;</span> <label>Scale Options</label></a></li>
         </ul>
     </nav>
-
-
-
-
 </div>

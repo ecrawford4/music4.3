@@ -7,9 +7,6 @@ function drawChart(index,pitchMapping,morphPercent,songMorph,morphValues){
 	{
 			morphPercent = 10;
 	}
-    //console.log(pitchMapping);
-    //console.log(songMorph);
-    //console.log(morphPercent);
 	if(songMorph === undefined || songMorph == "")
 	{
         songMorph = "beethoven";
@@ -18,11 +15,7 @@ function drawChart(index,pitchMapping,morphPercent,songMorph,morphValues){
 	  data.addColumn('number', 'X');
 	  data.addColumn('number', songMorph);
 	  data.addColumn('number', 'Voice Data');
-	  //var a= [0,0,0];
-	  //var a2=[1,10,5];
 	  var mainA=[];
-	  //mainA.push(a);
-	  //mainA.push(a2);
 	var toAdd = 0;
 	if(songMorph == "beethoven")
 	{
@@ -53,12 +46,4 @@ function drawChart(index,pitchMapping,morphPercent,songMorph,morphValues){
 	var chartID = "chart_div"+index;
 	var chart = new google.visualization.LineChart(document.getElementById(chartID));
     chart.draw(data, options);
-    //var element = document.getElementById("morphElement");
-
-    //element.id="morphElement";
-    //element.innerHTML = mainA;
-    //document.getElementById("morph").appendChild(element);
-    //document.getElementById("chart_div").appendChild(element);
-
-
 }

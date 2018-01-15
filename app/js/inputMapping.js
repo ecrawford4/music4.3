@@ -30,9 +30,6 @@ function getInputMapping(inputSet,algorithm,minRange,maxRange)
 //get Division
 function getDivisionSet(inputSet,minRange,maxRange){
     var inputSetExcludeNull = inputSet.filter(function(n) { return n !="null";});
-    //console.log(inputSetExcludeNull);
-    //console.log(inputSet);
-    //var smallest = Math.min.apply(null, arrayOfNumbers.filter(function(n) { return !isNaN(n); }));
 
     var result = [1];
     var  dataShift;
@@ -50,15 +47,11 @@ function getDivisionSet(inputSet,minRange,maxRange){
         rangeScale = newRange / dataRange;
     }
 
-
     for(var i=0; i< inputSet.length; i++){
 
         dataShift = inputSet[i] - dataMin;
         _value.push((Math.round(dataShift * rangeScale) + +minRange));
-
-
     }
-
     return _value;
     //return result;
 }
@@ -82,10 +75,8 @@ function getLogarithmicSet(inputSet,minRange,maxRange){
 
     }
 
-
     var maxInValue = Math.max.apply(Math,_value.filter(function(n) { return n !="null";}));
     dataMax =  maxInValue < dataMax ? dataMax : maxInValue;
-
 
     for (var i=0; i < _value.length;i++)
     {
@@ -95,10 +86,7 @@ function getLogarithmicSet(inputSet,minRange,maxRange){
 
 
     }
-
     return _value;
-
-
 }
 
 //get Modulo
@@ -120,6 +108,5 @@ function getModuloSet(inputSet,minRange,maxRange){
             _value.push(moddedData + +minRange);
         }
     }
-
     return _value;
 }

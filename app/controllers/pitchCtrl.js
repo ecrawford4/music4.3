@@ -412,10 +412,7 @@ angular.module("myApp")
             PlayMusic.playAll(allVoices,tempo);
         }
         /*End Play music */
-        $scope.playAll2 = function (tempo) {
-            var allVoices = $scope.allVoices;
-            PlayMusic.playAll2(allVoices,tempo);
-        }
+
         $scope.pausePlayStop = function (tempo,stop) {
             var allVoices = $scope.allVoices;
             $http({
@@ -438,42 +435,11 @@ angular.module("myApp")
 
         }
 
-        $scope.pause = function () {
-            PlayMusic.pause();
-        }
-        $scope.resume = function () {
-            PlayMusic.resume();
-        }
 
-
-        $scope.login = function() {
-            var allVoices = $scope.allVoices;
-            $http({
-                method: 'POST',
-                url: './php/phpfile.php',
-                data: {
-                    rawData: DownloadMidiFact.getDownloadData(allVoices)
-                },
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            }).then(function (response) {
-                // code to execute in case of success
-                //$window.alert($scope.allVoices[0].finalPitchMapping);
-                $scope.loadData = response.data;
-            }, function (response) {
-                // code to execute in case of error
-                //$window.alert("failed");
-            });
-
-
-        };
 
         $scope.download = function (tempo) {
             var allVoices = $scope.allVoices;
-            //DownloadMidiFact.getDownloadData(allVoices);
-
             document.forms['download'].notedata.value = DownloadMidiFact.getDownloadData(tempo, allVoices);
-            //$window.alert("download unc");
-            //$window.alert(document.forms['download'].notedata.value);
             document.forms['download'].submit();
         }
 
@@ -650,18 +616,9 @@ angular.module("myApp")
             $scope.currentVoiceIndex= index;
         }
 
-        $scope.reverse = function () {
-            //var modalInputFormatted = $scope.modalInput.slice();
-            //modalInputFormatted =
-            //modalInputFormatted = modalInputFormatted.reverse();
-            //$window.alert(scope.modalInput);
-            //$scope.modalInputFormatted = $scope.modalInput;
-        }
 
         $scope.changeInputModal = function(modalInput,utilFunc)
         {
-            //$scope.modalInput = $scope.modalInput.slice();
-            //$window.alert(modalInput);
             $scope.modalInputFormatted = Utility.changeInput(utilFunc,modalInput);
         }
 

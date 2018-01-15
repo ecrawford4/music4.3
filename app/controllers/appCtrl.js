@@ -94,20 +94,6 @@ angular.module("myApp")
         factory.playAll = function (allVoices,tempo) {
             return playAll(allVoices,tempo); // include playMusic.js
         }
-        factory.playAll2 = function (allVoices,tempo) {
-            return playAll2(allVoices,tempo); // include playMusic.js
-        }
-        factory.pausePlayStop = function (tempo,stop,loadData) {
-            return pausePlayStop(tempo,stop,loadData); // include playMusic.js
-        }
-
-        factory.pause = function () {
-            return pause(); // include playMusic.js
-        }
-        factory.resume = function () {
-            return resume(); // include playMusic.js
-        }
-
         factory.createKeyboard = function () {
             return createKeyboard(); // include playMusic.js
         }
