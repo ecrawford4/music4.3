@@ -2,7 +2,7 @@
     'use strict';
 
     if (typeof define === 'function' && define.amd) {
-        define(['../angular'], factory);
+        define(['../js/angular'], factory);
     } else if (typeof exports === 'object') {
         factory(require('angular'));
         module.exports = 'ngStorage';

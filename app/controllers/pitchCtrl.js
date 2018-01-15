@@ -9,9 +9,6 @@ angular.module("myApp")
         //Default values
         $scope.selectedNumVoice = 1;
 
-
-
-
         var voiceArray = [];
         for(var i = 0; i < $scope.selectedNumVoice ; i++)
         {
@@ -42,9 +39,6 @@ angular.module("myApp")
                 }
             );
         }
-
-        //$scope.allVoices = voiceArray;
-
 
 
         if($localStorage.allVoices === undefined){
@@ -87,77 +81,14 @@ angular.module("myApp")
         }
 
         $scope.removeVoice = function (index) {
-
-            //$scope.allVoices = $localStorage.allVoices
-
-            // To display confirm box
-            /*
-            if ($window.confirm("Are you sure to delete voice " + (index+1) + "?") == true) {
-                $scope.allVoices.splice(index, 1);
-            }
-            */
             $scope.allVoices.splice(index, 1);
-            //$localStorage.allVoices.splice(index, 1);
         }
 
         $scope.$watch('allVoices.length', function(newValue, oldValue) {
             $scope.selectedNumVoice = $scope.allVoices.length;
-            //$window.alert("changed");
-            /*
-            for(var i = 0; i < $scope.allVoices.length ; i++)
-            {
-                var obj = $scope.allVoices[i];
-                switch(obj.selectedSet)
-                {
-                    case "Integers":
-                        obj.pitchSetToolTip = "Integers are the set of numbers that include the natural " +
-                                        "numbers (0,1,2 ...), combined with the negatives of the natural numbers (0,-1,-2,...).";
-                        break;
-                    case "Sine":
-                        result = getSineSet (noteCount);
-                        break;
-                    case "Fibonacci":
-                        result = getFibonacciSet (noteCount);
-                        break;
-                    case "Pascal":
-                        result = getPascalSet (noteCount);
-                        break;
-                    case "Powers":
-                        result = getPowerSet (noteCount);
-                        break;
-                    case "Phi":
-                        result = getPhiSet (noteCount);
-                        break;
-                    case "Pi":
-                        result = getPiSet (noteCount);
-                        break;
-                    case "E Constant":
-                        obj.pitchSetToolTip = "Known as Euler's number, e is a " +
-                                            "mathematical constant constant which represents the base of the natural logarithm function, or 2.718... " +
-                                            "This selection will display a decimal expansion of e.";
-                        break;
-                    case "DNA":
-                        result = getDNA (noteCount);
-                        break;
-                    case "RNA":
-                        result = getRNA (noteCount);
-                        break;
-                    case "Protein":
-                        result = getProtein (noteCount);
-                        break;
-                    case "Custom":
-                        result = "Please enter your own set of input...";
-                        break;
-                }
-
-
-            }
-            */
-
         });
 
         $scope.updateNumVoice = function () {
-
             var allVoicesLength = $scope.allVoices.length;
             var diff = Math.abs($scope.numVoices - allVoicesLength);
             if(allVoicesLength > $scope.numVoices)
@@ -179,14 +110,6 @@ angular.module("myApp")
             }
         }
 
-/*
-        $scope.$watch('numVoices', function(newValue, oldValue) {
-            $window.alert("ok");
-        });
-*/
-       $scope.save = function () {
-            //$localStorage.allVoices = $scope.allVoices;
-        }
 
         $scope.noteCountChanged = function (index) {
             var obj = $scope.allVoices[index];
@@ -603,15 +526,15 @@ angular.module("myApp")
 
 
         $scope.openKeyboard = function(){
-            $window.open('keyboard.html', "Window Name", "height=800,width=480");
+            $window.open('views/keyboard.html', "Window Name", "height=800,width=480");
         }
 
         $scope.openRythm = function(){
-            $window.open('rythm.html', "Window Name", "height=200,width=900");
+            $window.open('views/rythm.html', "Window Name", "height=200,width=900");
         }
 
         $scope.openProtein = function(){
-            $window.open('protein.html', "Window Name", "height=500,width=1200");
+            $window.open('views/protein.html', "Window Name", "height=500,width=1200");
         }
 
         $scope.checkMorph = function(index,morphPercent1)
@@ -624,9 +547,6 @@ angular.module("myApp")
             }
             DrawChart.drawChart(index,obj.pitchMapping,obj.morphPercent,obj.songMorph,morphValues);
         }
-
-
-
 
 
         $scope.currentIndex = 0;

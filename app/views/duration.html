@@ -1,13 +1,3 @@
-<head>
-    <style>
-        .form-inline .form-group input {
-            width:50px;
-        }
-        #noteCountID input{
-            width:80px;
-        }
-    </style>
-</head>
 <div ng-controller="pitchCtrl">
     <div class="progress">
         <div class="progress-bar progress-bar-success" style="width: 25%">
@@ -21,7 +11,7 @@
 
     <div class="form-inline">
         <p>
-            Select Number of Voices:
+            <label> Select Number of Voices: </label>
             <select class="form-control"
                     ng-model="numVoices"
                     ng-options = "x for x in numVoicesArr"
@@ -37,9 +27,6 @@
 
         </p>
     </div>
-
-
-
 
 
     <div id="products" class="row list-group" >
@@ -64,7 +51,7 @@
                             </div>
                             <p></p>
                             <div class="form-inline">
-                                Select set for duration:
+                                <label> Select set for duration: </label>
                                 <select class="form-control"
                                         ng-change="updateDurationSet($index)"
                                         ng-model="v.selectedDurationSet"
@@ -105,8 +92,9 @@
 
                             </div>
 
-                            <p>Duration Input
-                                <textarea ng-model="v.durationInput" class="form-control" rows="4" cols="50" placeholder="Input for Duration">
+                            <p>
+                                <label> Duration Input : </label>
+                                <textarea ng-model="v.durationInput" class="form-control" rows="4" cols="50" placeholder="Input for Duration...">
 
                             </textarea>
                             </p>
@@ -142,7 +130,7 @@
                             </div>
                             <p></p>
                             <div class="form-inline">
-                                Select algorithm for duration:
+                                <label> Select algorithm for duration: </label>
                                 <select class="form-control"
                                         ng-change="updateDurationMapping($index)"
                                         ng-model="v.durationAlgorithm"
@@ -154,7 +142,7 @@
                             </div>
 
                             <p>
-                                Duration Mapping :
+                                <label> Duration Mapping : </label>
                                 <textarea ng-model="v.durationMapping" class="form-control" rows="4" cols="50" readonly>
                             </textarea>
                             </p>
@@ -170,8 +158,8 @@
 
     <nav aria-label="...">
         <ul class="pager">
-             <li class="previous"><a href="#pitch"><span aria-hidden="true">&larr;</span> Pitch</a></li>
-            <li class="next"><a href="#scaleOptions">Scale Options <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="previous"><a href="#pitch"><span aria-hidden="true">&larr;</span><label> Pitch </label></a></li>
+            <li class="next"><a href="#scaleOptions"> <label>Scale Options</label> <span aria-hidden="true">&rarr;</span></a></li>
         </ul>
     </nav>
 

@@ -1,25 +1,3 @@
-<head>
-    <!-- For tooltip -->
-    <!-- Bootstrap core CSS -->
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
-
-
-
-    <!-- Custom styles for this template -->
-    <link href="../css/tooltip-viewport.css" rel="stylesheet">
-    <!-- End tooltip -->
-    <style>
-        .form-inline .form-group input {
-            width:50px;
-        }
-
-        #noteCountID input{
-            width:80px;
-        }
-    </style>
-</head>
-<!-- <button type="button" class="btn btn-default tooltip-bottom" title="This should be shifted to the right">Shift Right</button> -->
-
 <div ng-controller="pitchCtrl" data-ng-init="initPitch()">
     <div class="progress">
         <div class="progress-bar progress-bar-success" style="width: 25%">
@@ -74,7 +52,7 @@
                             </div>
                             <p></p>
                             <div class="form-inline">
-                                Select set for pitch:
+                                <label> Select set for pitch: </label>
                                 <select class="form-control"
                                         ng-change="updateInputSet($index)"
                                         ng-model="v.selectedSet"
@@ -121,14 +99,10 @@
 
                             </div>
 
-                            <p>Pitch input:
-                                <div ng-show="v.selectedSet == 'Custom'">
-                                    <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Please enter your own set of input..."></textarea>
-                                </div>
-                                <div ng-hide="v.selectedSet == 'Custom'">
-                                    <textarea ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
-                                </div>
-
+                            <p>
+                                <label> Pitch input: </label>
+                                <textarea ng-show="v.selectedSet == 'Custom'" ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Please enter your own set of input..."></textarea>
+                                <textarea ng-hide="v.selectedSet == 'Custom'" ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
                             </p>
 
                             <!-- Trigger the modal with a button -->
@@ -164,7 +138,7 @@
                             </div>
                             <p></p>
                             <div class="form-inline">
-                                Select algorithm for pitch:
+                                <label> Select algorithm for pitch: </label>
                                 <select class="form-control"
                                         ng-change="updatePitchMapping($index)"
                                         ng-model="v.pitchAlgorithm"
@@ -174,8 +148,9 @@
                             </div>
 
 
-                            <p>Pitch Mapping : <textarea class="form-control" ng-model="v.pitchMapping" rows="4" cols="50" readonly></textarea> </p>
-
+                            <p>
+                                <label> Pitch Mapping : </label>
+                                <textarea class="form-control" ng-model="v.pitchMapping" rows="4" cols="50" readonly></textarea> </p>
                         </div>
                     </div>
                 </div> <!-- End caption div -->
@@ -191,7 +166,7 @@
 
     <nav aria-label="...">
         <ul class="pager">
-            <li class="next"><a href="#duration">Duration <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="next"><a href="#duration"> <label> Duration </label> <span aria-hidden="true">&rarr;</span></a></li>
         </ul>
     </nav>
 </div>

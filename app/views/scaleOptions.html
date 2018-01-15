@@ -1,4 +1,3 @@
-
 <div ng-controller="pitchCtrl">
     <div class="progress">
         <div class="progress-bar progress-bar-success" style="width: 25%">
@@ -13,9 +12,12 @@
             <span>Scale Options</span>
         </div>
     </div>
-    <button type="button" class="btn btn-info btn-sm" ng-click="resetData()()">
-        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reset Data
-    </button>
+    <p>
+        <button type="button" class="btn btn-info btn-sm" ng-click="resetData()()">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reset Data
+        </button>
+    </p>
+
     <div id="products" class="row list-group" >
         <div class="item  col-xs-6 col-lg-6" ng-repeat="v in allVoices">
             <div id="playBorder{{$index+1}}" class="thumbnail">
@@ -29,7 +31,7 @@
 
                             <div class="form-inline">
                                 <p>
-                                    Using:
+                                    <label> Using: </label>
                                     <select class="form-control"
                                             ng-model="v.scaleType"
                                             ng-init="v.scaleType='scales'"
@@ -44,15 +46,14 @@
                             <div ng-if="v.scaleType == 'scales'">
                                 <div class="form-inline">
                                     <p>
-                                        Scale By:
+                                        <label> Scale By: </label>
                                         <select class="form-control"
                                                 ng-change="scaleOptionsChanged($index)"
                                                 ng-model="v.scaleOption"
                                                 ng-options="x for x in scaleNames">
                                         </select>
 
-                                        Key:
-
+                                        <label> Key: </label>
                                         <select class="form-control"
                                                 ng-change="scaleOptionsChanged($index)"
                                                 ng-model="v.keyOptionIndex"
@@ -71,7 +72,7 @@
                             </div>
 
                             <p>
-                                Final Pitch Mapping :
+                                <label> Final Pitch Mapping : </label>
                                 <textarea ng-model="v.finalPitchMapping" class="form-control" rows="4" cols="50" readonly></textarea>
                             </p>
 
@@ -140,8 +141,8 @@
 
     <nav aria-label="...">
         <ul class="pager">
-            <li class="previous"><a href="#duration"><span aria-hidden="true">&larr;</span> Duration</a></li>
-            <li class="next"><a href="#play">Play <span aria-hidden="true">&rarr;</span></a></li>
+            <li class="previous"><a href="#duration"><span aria-hidden="true">&larr;</span><label> Duration</label></a></li>
+            <li class="next"><a href="#play"> <label>Play</label> <span aria-hidden="true">&rarr;</span></a></li>
         </ul>
     </nav>
 
