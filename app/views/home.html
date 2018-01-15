@@ -1,4 +1,3 @@
-
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
@@ -18,20 +17,12 @@
                 <br><br>
             </p>
 
-            <!--
-            <select name="Previous Versions" id="previousmenu">
-                <option value="title" disabled selected hidden>Previous Versions</option>
-                <option value="3.1"><a href="http://musicalgorithms.org/3.1">Version 3.1</a></option>
-                <option value="3.0"><a href="http://musicalgorithms.org/3.0">Version 3.0</a></option>
-                <option value="2.0"><a href="http://musicalgorithms.org/2.0">Version 2.0</a></option>
-                <option value="1.0"><a href="http://musicalgorithms.org/1.0">Version 1.0</a></option>
-            </select>
-            -->
+            <!-- Select drop down for previous versions -->
             <select ng-model="prevLink"
                     ng-change="updateVersion(prevLink.link)"
                     ng-options = "x.name for x in previousVersions">
             </select>
-            <!-- {{prevLink.link}} -->
+
             <blockquote>
                 <small>
                     Project Director:
@@ -47,8 +38,6 @@
 
 
         </div>
-
-        <!-- <p><a class="btn btn-primary btn-lg" href="#howto" role="button">Get Started</a></p> -->
     </div> <!-- End jumbotron -->
     <div class="panel-footer">
         Team: Vu Nguyen, Travis Landers, Kyle Darland
