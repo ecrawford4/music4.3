@@ -94,7 +94,7 @@ function playAll(allVoices,tempo)
                 var pitchValue = finalPitchArray[i];
                 MIDI.noteOn(k, pitchValue+20, velocity, startTime ); //set tempo faster hardcode now, later change algorithm
                 // MIDI.noteOn(1, 25, velocity, startTime+1);
-                startTime += durationMappingScale[i]/tempo;
+                startTime += (durationMappingScale[i]*2)/tempo;
                 endTime = startTime;
                 MIDI.noteOff(k, pitchValue + 20, endTime );
                 //MIDI.noteOff(1, 25, endTime);
@@ -106,7 +106,7 @@ function playAll(allVoices,tempo)
                             document.getElementById("pitchDisplay").innerHTML = document.getElementById("pitchDisplay").innerHTML + " " +finalPitchArray[x] ;
 
                         },
-                        durationMappingScaleForTimeOut[x]*(1000/tempo));
+                        durationMappingScaleForTimeOut[x]*2*(1000/tempo));
                 })(i,k,tempo);
 
             }
