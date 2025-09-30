@@ -81,22 +81,25 @@ angular.module("myApp")
         }
         return factory;
     })
-    .factory('PlayMusic', function() {
+    .factory('PlayMusic', function($rootScope) {
         var factory = {};
-        /*
-         play music use the index for the channel number
-         */
 
-        factory.playMusic = function(finalPitchArray,durationMapping,index,instrument,tempo) {
-            return playMusic(finalPitchArray,durationMapping,index,instrument,tempo); // include playMusic.js
-        }
+        factory.playAll = function(allVoices, tempo, scope) {
+            return playAll(allVoices, tempo, scope);
+        };
+        factory.pausePlayback = function() {
+            return pausePlayback();
+        };
+        factory.resumePlayback = function(allVoices, scope) {
+            return resumePlayback(allVoices, scope);
+        };
+        factory.stopPlayback = function(scope) {
+            return stopPlayback(scope);
+        };
+        factory.createKeyboard = function() {
+            return createKeyboard();
+        };
 
-        factory.playAll = function (allVoices,tempo) {
-            return playAll(allVoices,tempo); // include playMusic.js
-        }
-        factory.createKeyboard = function () {
-            return createKeyboard(); // include playMusic.js
-        }
         return factory;
     })
     .controller("myAppCtrl", function ($scope, $http,$window) {

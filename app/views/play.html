@@ -81,7 +81,7 @@
 
     <br/>
     <button type="button" class="btn btn-primary" ng-click="playAll(tempo)">
-        <span class="glyphicon glyphicon-play"></span> Play
+    <span class="glyphicon glyphicon-play"></span> Play
     </button>
     <button type="button" class="btn btn-info" ng-click="pausePlayback()">
         <span class="glyphicon glyphicon-pause"></span> Pause
@@ -93,6 +93,8 @@
         <span class="glyphicon glyphicon-stop"></span> Stop
     </button>
     <br/><br/>
+
+    <div id="pitchDisplay">{{pitchDisplay}}</div>
 
     <md-content>
         <md-slider-container>

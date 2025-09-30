@@ -1,13 +1,36 @@
 angular.module("myApp")
 
-    .controller("playCtrl",function ($scope,$window, $localStorage, PlayMusic, SharedData) {
+    .controller("playCtrl", function($scope, PlayMusic, $localStorage, SharedData) {
+    if ($localStorage.allVoices === undefined) {
+        $scope.allVoices = SharedData.getSharedData();
+        $localStorage.allVoices = $scope.allVoices;
+    } else {
+        $scope.allVoices = $localStorage.allVoices;
+    }
 
-        if($localStorage.allVoices === undefined){
-            //$window.alert("undefined");
-            $scope.allVoices = SharedData.getSharedData();
-            $localStorage.allVoices = $scope.allVoices;
-        }else{
-            $scope.allVoices = $localStorage.allVoices;
-            //$window.alert("defined");
-        }
-    });
+    $scope.pitchDisplay = "";
+
+    $scope.updatePitchDisplay = function(pitch) {
+        $scope.pitchDisplay += " " + pitch;
+    };
+
+    $scope.clearPitchDisplay = function() {
+        $scope.pitchDisplay = "";
+    };
+
+    $scope.playAll = function(tempo) {
+        PlayMusic.playAll($scope.allVoices, tempo, $scope);
+    };
+
+    $scope.pausePlayback = function() {
+        PlayMusic.pausePlayback();
+    };
+
+    $scope.resumePlayback = function() {
+        PlayMusic.resumePlayback($scope.allVoices, $scope);
+    };
+
+    $scope.stopPlayback = function() {
+        PlayMusic.stopPlayback($scope);
+    };
+});

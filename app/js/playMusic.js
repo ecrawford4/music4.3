@@ -1,67 +1,123 @@
-function playAll(allVoices,tempo)
-{
-    //var instrumentArray = {"acoustic_grand_piano": 0, "synth_drum": 118};
-    var velocity = 127; // how hard the note hits
-    //var speedRate = 0.09;
-    var speedRate = 2;
-    for(var k = 0; k < allVoices.length; k++)
-    {
+var playbackState = {
+    isPlaying: false,
+    isPaused: false,
+    currentVoiceIndex: 0,
+    currentNoteIndex: 0,
+    timeouts: [],
+    tempo: 120
+};
+
+
+function playAll(allVoices, tempo, scope) {
+    stopPlayback(scope);
+
+    playbackState.isPlaying = true;
+    playbackState.isPaused = false;
+    playbackState.tempo = tempo;
+    playbackState.currentVoiceIndex = 0;
+    playbackState.currentNoteIndex = 0;
+
+    scope.clearPitchDisplay();
+
+    var velocity = 127;
+
+    for (var k = 0; k < allVoices.length; k++) {
         var obj = allVoices[k];
-        var muted = obj.muted;
-        if(muted == 0)
-        {
+        if (obj.muted !== 0) continue;
 
-            var finalPitchArray = obj.finalPitchMapping;
-            var durationMapping = obj.durationMapping;
-            var instrument = obj.instrument;
-            //MIDI.programChange(index, instrument.no);
-            MIDI.programChange(k, MIDI.GM.byName[instrument.name].number);
-            MIDI.setVolume(k, 127);
+        var finalPitchArray = obj.finalPitchMapping;
+        var durationMapping = obj.durationMapping;
+        var instrument = obj.instrument;
 
-            var startTime = 0;
-            var endTime = 0;
-            /* Convert durationMapping into tick temp
-             * Because original 0 in duration will not be play so it should be mapped to music tick
-             * */
-            var durationMappingScale = getDurationMappingScale(durationMapping);
-            //End converting duration tick
+        MIDI.programChange(k, MIDI.GM.byName[instrument.name].number);
+        MIDI.setVolume(k, 127);
 
-            /**
-             * Because the light up keyboard use timeout so it needs delta time,
-             * newDurationMappingScale created for that purpose
-             * For example, duration is 2,3,4,5
-             * timeout needs to  be, 0, 2=2+0, 5 = 2+3, 9 = 4 +5
-             */
-            var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
+        var durationMappingScale = getDurationMappingScale(durationMapping);
+        var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
 
-            for(var i = 0 ; i< finalPitchArray.length ; i++)
-            {
-                var pitchValue = finalPitchArray[i];
-                MIDI.noteOn(k, pitchValue+20, velocity, startTime ); //set tempo faster hardcode now, later change algorithm
-                //MIDI.noteOn(1, 25, velocity, startTime+1);
-                startTime += (durationMappingScale[i]*2)/tempo;
-                endTime = startTime;
-                MIDI.noteOff(k, pitchValue + 20, endTime );
-                //MIDI.noteOff(1, 25, endTime);
+        var startTime = 0;
 
-                (function (x,y,z) {
-                    setTimeout(function () {
-                            unColorKeys();
-                            colorKey(finalPitchArray[x],y);
-                            document.getElementById("pitchDisplay").innerHTML = document.getElementById("pitchDisplay").innerHTML + " " +finalPitchArray[x] ;
+        for (var i = 0; i < finalPitchArray.length; i++) {
+            var pitchValue = finalPitchArray[i];
 
-                        },
-                        durationMappingScaleForTimeOut[x]*2*(1000/tempo));
-                })(i,k,tempo);
-            }
-            unColorKeys();
+            MIDI.noteOn(k, pitchValue + 20, velocity, startTime);
+            startTime += (durationMappingScale[i] * 2) / tempo;
+            var endTime = startTime;
+            MIDI.noteOff(k, pitchValue + 20, endTime);
+
+            (function (x, voiceNo) {
+                var timeoutId = setTimeout(function () {
+                    if (playbackState.isPaused || !playbackState.isPlaying) return;
+
+                    unColorKeys();
+                    colorKey(finalPitchArray[x], voiceNo);
+
+                    scope.$apply(function () {
+                        scope.updatePitchDisplay(finalPitchArray[x]);
+                    });
+
+                    playbackState.currentVoiceIndex = voiceNo;
+                    playbackState.currentNoteIndex = x;
+                }, durationMappingScaleForTimeOut[x] * 2 * (1000 / tempo));
+                playbackState.timeouts.push(timeoutId);
+            })(i, k);
         }
-        unColorKeys();
     }
-    unColorKeys();
-    document.getElementById("pitchDisplay").innerHTML = "";
-    /*End play ligh*/
 }
+
+function pausePlayback() {
+    playbackState.isPaused = true;
+    // Prevent future coloring/timeouts from executing
+    playbackState.timeouts.forEach(clearTimeout);
+    playbackState.timeouts = [];
+}
+
+function resumePlayback(allVoices) {
+    if (!playbackState.isPlaying || !playbackState.isPaused) return;
+    playbackState.isPaused = false;
+
+    // Resume from the last known position
+    var voiceIndex = playbackState.currentVoiceIndex;
+    var noteIndex = playbackState.currentNoteIndex;
+
+    // Slice from where we left off and replay
+    var obj = allVoices[voiceIndex];
+    var finalPitchArray = obj.finalPitchMapping.slice(noteIndex);
+    var durationMapping = obj.durationMapping.slice(noteIndex);
+
+    // Call playAll again but only with the sliced arrays
+    playAll([{
+        finalPitchMapping: finalPitchArray,
+        durationMapping: durationMapping,
+        instrument: obj.instrument,
+        muted: 0
+    }], playbackState.tempo);
+}
+
+function stopPlayback(scope) {
+    playbackState.isPlaying = false;
+    playbackState.isPaused = false;
+
+    playbackState.timeouts.forEach(clearTimeout);
+    playbackState.timeouts = [];
+
+    for (var ch = 0; ch < 16; ch++) {
+        for (var note = 0; note < 128; note++) {
+            try {
+                MIDI.noteOff(ch, note, 0);
+            } catch (e) {}
+        }
+    }
+
+    unColorKeys();
+
+    if (scope) {
+        scope.$apply(function () {
+            scope.clearPitchDisplay();
+        });
+    }
+}
+
 
 function getDurationMappingScaleForTimeOut(durationMappingScale)
 {
