@@ -4,20 +4,19 @@ var playbackState = {
     currentVoiceIndex: 0,
     currentNoteIndex: 0,
     timeouts: [],
-    tempo: 120
+    tempo: 120,
+    voicesData: []
 };
 
-
 function playAll(allVoices, tempo, scope) {
-    stopPlayback(scope);
+    stopPlayback(scope); // reset any previous run
 
     playbackState.isPlaying = true;
     playbackState.isPaused = false;
     playbackState.tempo = tempo;
     playbackState.currentVoiceIndex = 0;
     playbackState.currentNoteIndex = 0;
-
-    scope.clearPitchDisplay();
+    playbackState.voicesData = allVoices;
 
     var velocity = 127;
 
@@ -38,60 +37,77 @@ function playAll(allVoices, tempo, scope) {
         var startTime = 0;
 
         for (var i = 0; i < finalPitchArray.length; i++) {
-            var pitchValue = finalPitchArray[i];
-
-            MIDI.noteOn(k, pitchValue + 20, velocity, startTime);
-            startTime += (durationMappingScale[i] * 2) / tempo;
-            var endTime = startTime;
-            MIDI.noteOff(k, pitchValue + 20, endTime);
-
-            (function (x, voiceNo) {
-                var timeoutId = setTimeout(function () {
-                    if (playbackState.isPaused || !playbackState.isPlaying) return;
+            (function(voiceNo, noteIndex, pitch, startDelay) {
+                var timeoutId = setTimeout(function() {
+                    if (!playbackState.isPlaying || playbackState.isPaused) return;
 
                     unColorKeys();
-                    colorKey(finalPitchArray[x], voiceNo);
-
-                    scope.$apply(function () {
-                        scope.updatePitchDisplay(finalPitchArray[x]);
-                    });
+                    colorKey(pitch, voiceNo);
+                    scope.updatePitchDisplay(pitch);
 
                     playbackState.currentVoiceIndex = voiceNo;
-                    playbackState.currentNoteIndex = x;
-                }, durationMappingScaleForTimeOut[x] * 2 * (1000 / tempo));
+                    playbackState.currentNoteIndex = noteIndex;
+                }, startDelay);
+
                 playbackState.timeouts.push(timeoutId);
-            })(i, k);
+            })(k, i, finalPitchArray[i], durationMappingScaleForTimeOut[i] * 2 * (1000 / tempo));
+
+            startTime += (durationMappingScale[i] * 2) / tempo;
+            MIDI.noteOn(k, finalPitchArray[i] + 20, velocity, startTime);
+            MIDI.noteOff(k, finalPitchArray[i] + 20, startTime);
         }
     }
 }
 
 function pausePlayback() {
     playbackState.isPaused = true;
-    // Prevent future coloring/timeouts from executing
     playbackState.timeouts.forEach(clearTimeout);
     playbackState.timeouts = [];
 }
 
-function resumePlayback(allVoices) {
-    if (!playbackState.isPlaying || !playbackState.isPaused) return;
-    playbackState.isPaused = false;
+function resumePlayback(allVoices, scope) {
+    if (!playbackState.isPaused) return;
 
-    // Resume from the last known position
-    var voiceIndex = playbackState.currentVoiceIndex;
+    playbackState.isPaused = false;
+    var voiceNo = playbackState.currentVoiceIndex;
     var noteIndex = playbackState.currentNoteIndex;
 
-    // Slice from where we left off and replay
-    var obj = allVoices[voiceIndex];
-    var finalPitchArray = obj.finalPitchMapping.slice(noteIndex);
-    var durationMapping = obj.durationMapping.slice(noteIndex);
+    var obj = playbackState.voicesData[voiceNo];
 
-    // Call playAll again but only with the sliced arrays
-    playAll([{
-        finalPitchMapping: finalPitchArray,
-        durationMapping: durationMapping,
-        instrument: obj.instrument,
-        muted: 0
-    }], playbackState.tempo);
+    playFromNote(obj, voiceNo, noteIndex + 1, playbackState.tempo, scope);
+}
+
+function playFromNote(voiceObj, voiceNo, startNoteIndex, tempo, scope) {
+    var velocity = 127;
+
+    var finalPitchArray = voiceObj.finalPitchMapping.slice(startNoteIndex);
+    var durationMapping = voiceObj.durationMapping.slice(startNoteIndex);
+
+    var durationMappingScale = getDurationMappingScale(durationMapping);
+    var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
+
+    var startTime = 0;
+
+    for (var i = 0; i < finalPitchArray.length; i++) {
+        (function(noteIndex, pitch, startDelay) {
+            var timeoutId = setTimeout(function() {
+                if (!playbackState.isPlaying || playbackState.isPaused) return;
+
+                unColorKeys();
+                colorKey(pitch, voiceNo);
+                scope.updatePitchDisplay(pitch);
+
+                playbackState.currentVoiceIndex = voiceNo;
+                playbackState.currentNoteIndex = startNoteIndex + noteIndex;
+            }, startDelay);
+
+            playbackState.timeouts.push(timeoutId);
+        })(i, finalPitchArray[i], durationMappingScaleForTimeOut[i] * 2 * (1000 / tempo));
+
+        startTime += (durationMappingScale[i] * 2) / tempo;
+        MIDI.noteOn(voiceNo, finalPitchArray[i] + 20, velocity, startTime);
+        MIDI.noteOff(voiceNo, finalPitchArray[i] + 20, startTime);
+    }
 }
 
 function stopPlayback(scope) {
@@ -110,65 +126,32 @@ function stopPlayback(scope) {
     }
 
     unColorKeys();
-
-    if (scope) {
-        scope.$apply(function () {
-            scope.clearPitchDisplay();
-        });
+    if (scope && scope.clearPitchDisplay) {
+        scope.clearPitchDisplay();
     }
 }
 
-
-function getDurationMappingScaleForTimeOut(durationMappingScale)
-{
+function getDurationMappingScaleForTimeOut(durationMappingScale) {
     var durationMappingScaleForTimeOut = [];
     durationMappingScaleForTimeOut[0] = 0;
-    for(var i = 1 ; i< durationMappingScale.length ; i++)
-    {
-        durationMappingScaleForTimeOut[i] = durationMappingScale[i-1] + durationMappingScaleForTimeOut[i-1];
+    for (var i = 1; i < durationMappingScale.length; i++) {
+        durationMappingScaleForTimeOut[i] = durationMappingScale[i - 1] + durationMappingScaleForTimeOut[i - 1];
     }
     return durationMappingScaleForTimeOut;
 }
 
-/**
- * 
- * @param {*} note 
- * @param {*} voiceNo 
- */
-function colorKey(note,voiceNo)
-{
-    if(voiceNo == 0)
-        $("#"+note).css("background","#ee421f");
-    else if(voiceNo == 1)
-        $("#"+note).css("background","#71ee13");
-    else if(voiceNo == 2)
-        $("#"+note).css("background","#132cee");
-    else if(voiceNo == 3)
-        $("#"+note).css("background","#ee19e4");
+function colorKey(note, voiceNo) {
+    if (voiceNo == 0)
+        $("#" + note).css("background", "#ee421f");
+    else if (voiceNo == 1)
+        $("#" + note).css("background", "#71ee13");
+    else if (voiceNo == 2)
+        $("#" + note).css("background", "#132cee");
+    else if (voiceNo == 3)
+        $("#" + note).css("background", "#ee19e4");
 }
 
-/**
- * clears the colors from the keys on the keyboard
- */
-function unColorKeys()
-{
-    $(".keyWhite").css("background","#ffffff");
-    $(".keyBlack").css("background","#000000");
-}
-
-var resumeF = false;
-
-/**
- * createKeyboard function initializes the keyboard
- */
-function createKeyboard(){
-    var colors = document.getElementById("colors");
-    var colorElements = [];
-    for (var n = 0; n < 88; n++) {
-        var d = document.createElement("div");
-        d.style.cssFloat="left";
-        d.innerHTML = MIDI.noteToKey[n + 21];
-        colorElements.push(d);
-        colors.appendChild(d);
-    }
+function unColorKeys() {
+    $(".keyWhite").css("background", "#ffffff");
+    $(".keyBlack").css("background", "#000000");
 }

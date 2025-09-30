@@ -19,7 +19,7 @@ angular.module("myApp")
     };
 
     $scope.playAll = function(tempo) {
-        PlayMusic.playAll($scope.allVoices, tempo, $scope);
+    PlayMusic.playAll($scope.allVoices, tempo, $scope);
     };
 
     $scope.pausePlayback = function() {
@@ -33,4 +33,5 @@ angular.module("myApp")
     $scope.stopPlayback = function() {
         PlayMusic.stopPlayback($scope);
     };
+    
 });
