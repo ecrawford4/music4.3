@@ -189,12 +189,15 @@
 					delay += ctx.currentTime;
 				}
 				var source = sources[sid];
-				source.gain.linearRampToValueAtTime(1, delay);
-				source.gain.linearRampToValueAtTime(0, delay + 0.3);
+				if (source.gainNode && source.gainNode.gain) {
+					var gain = source.gainNode.gain;
+					gain.linearRampToValueAtTime(gain.value, delay);
+					gain.linearRampToValueAtTime(0, delay + 0.05);
+				}
 				if (source.noteOff) { // old api
-					source.noteOff(delay + 0.3);
+					source.noteOff(delay + 0.05);
 				} else { // new api
-					source.stop(delay + 0.3);
+					source.stop(delay + 0.05);
 				}
 				delete sources[sid];
 			}

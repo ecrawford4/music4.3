@@ -1,133 +1,254 @@
 var playbackState = {
     isPlaying: false,
     isPaused: false,
-    currentVoiceIndex: 0,
-    currentNoteIndex: 0,
     timeouts: [],
     tempo: 120,
-    voicesData: []
+    voicesData: [],
+    voiceStates: [],
+    scope: null
 };
 
 function playAll(allVoices, tempo, scope) {
     stopPlayback(scope); // reset any previous run
 
+    var safeTempo = normalizeTempo(tempo);
+
     playbackState.isPlaying = true;
     playbackState.isPaused = false;
-    playbackState.tempo = tempo;
-    playbackState.currentVoiceIndex = 0;
-    playbackState.currentNoteIndex = 0;
-    playbackState.voicesData = allVoices;
+    playbackState.tempo = safeTempo;
+    playbackState.voicesData = allVoices || [];
+    playbackState.voiceStates = [];
+    playbackState.scope = scope || null;
 
     var velocity = 127;
 
-    for (var k = 0; k < allVoices.length; k++) {
-        var obj = allVoices[k];
-        if (obj.muted !== 0) continue;
+    for (var k = 0; k < playbackState.voicesData.length; k++) {
+        var obj = playbackState.voicesData[k];
+        if (!obj || obj.muted) continue;
 
-        var finalPitchArray = obj.finalPitchMapping;
+        var finalPitchArray = obj.finalPitchMapping || [];
         var durationMapping = obj.durationMapping;
-        var instrument = obj.instrument;
+        var instrument = obj.instrument || {};
+        if (!finalPitchArray.length) continue;
 
-        MIDI.programChange(k, MIDI.GM.byName[instrument.name].number);
+        if (instrument.name && MIDI.GM.byName[instrument.name]) {
+            MIDI.programChange(k, MIDI.GM.byName[instrument.name].number);
+        }
         MIDI.setVolume(k, 127);
 
         var durationMappingScale = getDurationMappingScale(durationMapping);
-        var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
+        var voiceState = {
+            voiceNo: k,
+            notes: finalPitchArray,
+            durationScale: durationMappingScale,
+            nextNoteIndex: 0,
+            timerId: null,
+            nextDueAt: 0,
+            waitUntilNextMs: 0,
+            velocity: velocity,
+            completed: false
+        };
 
-        var startTime = 0;
+        playbackState.voiceStates.push(voiceState);
+        scheduleNextNoteForVoice(voiceState, 0);
+    }
 
-        for (var i = 0; i < finalPitchArray.length; i++) {
-            (function(voiceNo, noteIndex, pitch, startDelay) {
-                var timeoutId = setTimeout(function() {
-                    if (!playbackState.isPlaying || playbackState.isPaused) return;
-
-                    unColorKeys();
-                    colorKey(pitch, voiceNo);
-                    scope.updatePitchDisplay(pitch);
-
-                    playbackState.currentVoiceIndex = voiceNo;
-                    playbackState.currentNoteIndex = noteIndex;
-                }, startDelay);
-
-                playbackState.timeouts.push(timeoutId);
-            })(k, i, finalPitchArray[i], durationMappingScaleForTimeOut[i] * 2 * (1000 / tempo));
-
-            startTime += (durationMappingScale[i] * 2) / tempo;
-            MIDI.noteOn(k, finalPitchArray[i] + 20, velocity, startTime);
-            MIDI.noteOff(k, finalPitchArray[i] + 20, startTime);
-        }
+    if (!playbackState.voiceStates.length) {
+        playbackState.isPlaying = false;
+        playbackState.isPaused = false;
     }
 }
 
+function scheduleNextNoteForVoice(voiceState, delayMs) {
+    if (!playbackState.isPlaying || playbackState.isPaused || voiceState.completed) return;
+
+    var timerId = setTimeout(function() {
+        removeTimer(timerId);
+        voiceState.timerId = null;
+
+        if (!playbackState.isPlaying || playbackState.isPaused) return;
+
+        if (voiceState.nextNoteIndex >= voiceState.notes.length) {
+            voiceState.completed = true;
+            finalizePlaybackIfFinished();
+            return;
+        }
+
+        var noteIndex = voiceState.nextNoteIndex;
+        var pitch = voiceState.notes[noteIndex];
+
+        unColorKeys();
+        colorKey(pitch, voiceState.voiceNo);
+        updatePitchDisplaySafe(playbackState.scope, pitch);
+
+        MIDI.noteOn(voiceState.voiceNo, pitch + 20, voiceState.velocity, 0);
+        MIDI.noteOff(voiceState.voiceNo, pitch + 20, 0);
+
+        voiceState.nextNoteIndex = noteIndex + 1;
+
+        if (voiceState.nextNoteIndex >= voiceState.notes.length) {
+            voiceState.completed = true;
+            finalizePlaybackIfFinished();
+            return;
+        }
+
+        var durationValue = voiceState.durationScale[noteIndex];
+        var nextDelayMs = getDelayMsFromDuration(durationValue, playbackState.tempo);
+
+        voiceState.waitUntilNextMs = nextDelayMs;
+        scheduleNextNoteForVoice(voiceState, nextDelayMs);
+    }, delayMs);
+
+    voiceState.timerId = timerId;
+    voiceState.nextDueAt = Date.now() + delayMs;
+    voiceState.waitUntilNextMs = delayMs;
+    playbackState.timeouts.push(timerId);
+}
+
 function pausePlayback() {
+    if (!playbackState.isPlaying || playbackState.isPaused) return;
+
     playbackState.isPaused = true;
-    playbackState.timeouts.forEach(clearTimeout);
-    playbackState.timeouts = [];
+
+    var now = Date.now();
+    for (var i = 0; i < playbackState.voiceStates.length; i++) {
+        var voiceState = playbackState.voiceStates[i];
+        if (voiceState.timerId !== null) {
+            clearTimeout(voiceState.timerId);
+            removeTimer(voiceState.timerId);
+            var remaining = voiceState.nextDueAt - now;
+            voiceState.waitUntilNextMs = remaining > 0 ? remaining : 0;
+            voiceState.timerId = null;
+        }
+    }
+
+    silenceAllNotes();
 }
 
 function resumePlayback(allVoices, scope) {
     if (!playbackState.isPaused) return;
 
     playbackState.isPaused = false;
-    var voiceNo = playbackState.currentVoiceIndex;
-    var noteIndex = playbackState.currentNoteIndex;
+    if (scope) {
+        playbackState.scope = scope;
+    }
 
-    var obj = playbackState.voicesData[voiceNo];
+    for (var i = 0; i < playbackState.voiceStates.length; i++) {
+        var voiceState = playbackState.voiceStates[i];
+        if (voiceState.completed || voiceState.nextNoteIndex >= voiceState.notes.length) {
+            continue;
+        }
 
-    playFromNote(obj, voiceNo, noteIndex + 1, playbackState.tempo, scope);
-}
-
-function playFromNote(voiceObj, voiceNo, startNoteIndex, tempo, scope) {
-    var velocity = 127;
-
-    var finalPitchArray = voiceObj.finalPitchMapping.slice(startNoteIndex);
-    var durationMapping = voiceObj.durationMapping.slice(startNoteIndex);
-
-    var durationMappingScale = getDurationMappingScale(durationMapping);
-    var durationMappingScaleForTimeOut = getDurationMappingScaleForTimeOut(durationMappingScale);
-
-    var startTime = 0;
-
-    for (var i = 0; i < finalPitchArray.length; i++) {
-        (function(noteIndex, pitch, startDelay) {
-            var timeoutId = setTimeout(function() {
-                if (!playbackState.isPlaying || playbackState.isPaused) return;
-
-                unColorKeys();
-                colorKey(pitch, voiceNo);
-                scope.updatePitchDisplay(pitch);
-
-                playbackState.currentVoiceIndex = voiceNo;
-                playbackState.currentNoteIndex = startNoteIndex + noteIndex;
-            }, startDelay);
-
-            playbackState.timeouts.push(timeoutId);
-        })(i, finalPitchArray[i], durationMappingScaleForTimeOut[i] * 2 * (1000 / tempo));
-
-        startTime += (durationMappingScale[i] * 2) / tempo;
-        MIDI.noteOn(voiceNo, finalPitchArray[i] + 20, velocity, startTime);
-        MIDI.noteOff(voiceNo, finalPitchArray[i] + 20, startTime);
+        scheduleNextNoteForVoice(voiceState, voiceState.waitUntilNextMs || 0);
     }
 }
 
 function stopPlayback(scope) {
+    var targetScope = scope || playbackState.scope;
+
     playbackState.isPlaying = false;
     playbackState.isPaused = false;
+    playbackState.scope = targetScope || null;
 
-    playbackState.timeouts.forEach(clearTimeout);
+    clearAllTimers();
+    playbackState.voiceStates = [];
+    playbackState.voicesData = [];
+
+    silenceAllNotes();
+
+    unColorKeys();
+    if (targetScope && targetScope.clearPitchDisplay) {
+        safeScopeInvoke(targetScope, targetScope.clearPitchDisplay);
+    }
+}
+
+function clearAllTimers() {
+    for (var i = 0; i < playbackState.timeouts.length; i++) {
+        clearTimeout(playbackState.timeouts[i]);
+    }
+
     playbackState.timeouts = [];
+
+    for (var j = 0; j < playbackState.voiceStates.length; j++) {
+        playbackState.voiceStates[j].timerId = null;
+        playbackState.voiceStates[j].nextDueAt = 0;
+        playbackState.voiceStates[j].waitUntilNextMs = 0;
+    }
+}
+
+function removeTimer(timerId) {
+    for (var i = 0; i < playbackState.timeouts.length; i++) {
+        if (playbackState.timeouts[i] === timerId) {
+            playbackState.timeouts.splice(i, 1);
+            return;
+        }
+    }
+}
+
+function finalizePlaybackIfFinished() {
+    if (!playbackState.isPlaying) return;
+
+    for (var i = 0; i < playbackState.voiceStates.length; i++) {
+        if (!playbackState.voiceStates[i].completed) {
+            return;
+        }
+    }
+
+    playbackState.isPlaying = false;
+    playbackState.isPaused = false;
+    clearAllTimers();
+    unColorKeys();
+}
+
+function silenceAllNotes() {
+    if (typeof MIDI.stopAllNotes === "function") {
+        try {
+            MIDI.stopAllNotes();
+            return;
+        } catch (e) {
+        }
+    }
 
     for (var ch = 0; ch < 16; ch++) {
         for (var note = 0; note < 128; note++) {
             try {
                 MIDI.noteOff(ch, note, 0);
-            } catch (e) {}
+            } catch (e) {
+            }
         }
     }
+}
 
-    unColorKeys();
-    if (scope && scope.clearPitchDisplay) {
-        scope.clearPitchDisplay();
+function getDelayMsFromDuration(durationValue, tempo) {
+    var scaleValue = durationValue;
+    if (typeof scaleValue !== "number" || isNaN(scaleValue)) {
+        scaleValue = 6;
+    }
+    return scaleValue * 2 * (1000 / normalizeTempo(tempo));
+}
+
+function normalizeTempo(tempo) {
+    var parsedTempo = parseFloat(tempo);
+    if (!parsedTempo || parsedTempo <= 0) {
+        return 120;
+    }
+    return parsedTempo;
+}
+
+function updatePitchDisplaySafe(scope, pitch) {
+    if (!scope || !scope.updatePitchDisplay) return;
+    safeScopeInvoke(scope, function() {
+        scope.updatePitchDisplay(pitch);
+    });
+}
+
+function safeScopeInvoke(scope, fn) {
+    if (!scope || !fn) return;
+
+    if (typeof scope.$applyAsync === "function") {
+        scope.$applyAsync(fn);
+    } else {
+        fn();
     }
 }
 
@@ -154,4 +275,8 @@ function colorKey(note, voiceNo) {
 function unColorKeys() {
     $(".keyWhite").css("background", "#ffffff");
     $(".keyBlack").css("background", "#000000");
+}
+
+function createKeyboard() {
+    return true;
 }
