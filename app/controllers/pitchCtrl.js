@@ -407,10 +407,33 @@ angular.module("myApp")
         }
 
 
+        $scope.pitchDisplay = "";
+
+        $scope.updatePitchDisplay = function(pitch) {
+            $scope.pitchDisplay += " " + pitch;
+        };
+
+        $scope.clearPitchDisplay = function() {
+            $scope.pitchDisplay = "";
+        };
+
+
         $scope.playAll = function (tempo) {
             var allVoices = $scope.allVoices;
-            PlayMusic.playAll(allVoices,tempo);
+            PlayMusic.playAll(allVoices,tempo,$scope);
         }
+
+        $scope.pausePlayback = function() {
+            PlayMusic.pausePlayback();
+        };
+
+        $scope.resumePlayback = function() {
+            PlayMusic.resumePlayback($scope.allVoices, $scope);
+        };
+
+        $scope.stopPlayback = function() {
+            PlayMusic.stopPlayback($scope);
+        };
         /*End Play music */
 
         $scope.pausePlayStop = function (tempo,stop) {
