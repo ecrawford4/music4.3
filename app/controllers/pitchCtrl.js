@@ -8,6 +8,38 @@ angular.module("myApp")
 
         //Default values
         $scope.selectedNumVoice = 1;
+        var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+
+        $scope.getVoiceColor = function(index) {
+            if (typeof index !== "number") {
+                return voiceColors[0];
+            }
+            return voiceColors[index % voiceColors.length];
+        };
+
+        $scope.getVoiceTextColor = function(index) {
+            return index % voiceColors.length === 1 ? "#111111" : "#ffffff";
+        };
+
+        $scope.getVoiceHeaderStyle = function(index) {
+            return {
+                "background": $scope.getVoiceColor(index),
+                "color": $scope.getVoiceTextColor(index),
+                "padding": "8px 10px",
+                "border-radius": "4px",
+                "margin-top": "0"
+            };
+        };
+
+        $scope.getPitchDisplayStyle = function(index) {
+            return {
+                "background": $scope.getVoiceColor(index),
+                "color": $scope.getVoiceTextColor(index),
+                "padding": "8px 10px",
+                "border-radius": "4px",
+                "margin-bottom": "6px"
+            };
+        };
 
         var voiceArray = [];
         for(var i = 0; i < $scope.selectedNumVoice ; i++)
@@ -86,6 +118,18 @@ angular.module("myApp")
 
         $scope.$watch('allVoices.length', function(newValue, oldValue) {
             $scope.selectedNumVoice = $scope.allVoices.length;
+
+            if (!$scope.pitchDisplayByVoice) {
+                $scope.pitchDisplayByVoice = [];
+            }
+
+            while ($scope.pitchDisplayByVoice.length < $scope.selectedNumVoice) {
+                $scope.pitchDisplayByVoice.push("");
+            }
+
+            if ($scope.pitchDisplayByVoice.length > $scope.selectedNumVoice) {
+                $scope.pitchDisplayByVoice.length = $scope.selectedNumVoice;
+            }
         });
 
         $scope.updateNumVoice = function () {
@@ -408,13 +452,26 @@ angular.module("myApp")
 
 
         $scope.pitchDisplay = "";
+        $scope.pitchDisplayByVoice = [];
 
-        $scope.updatePitchDisplay = function(pitch) {
+        $scope.updatePitchDisplay = function(pitch, voiceNo) {
+            var targetVoice = typeof voiceNo === "number" ? voiceNo : 0;
+
+            while ($scope.pitchDisplayByVoice.length <= targetVoice) {
+                $scope.pitchDisplayByVoice.push("");
+            }
+
+            $scope.pitchDisplayByVoice[targetVoice] += " " + pitch;
             $scope.pitchDisplay += " " + pitch;
         };
 
         $scope.clearPitchDisplay = function() {
             $scope.pitchDisplay = "";
+            $scope.pitchDisplayByVoice = [];
+
+            for (var i = 0; i < $scope.allVoices.length; i++) {
+                $scope.pitchDisplayByVoice.push("");
+            }
         };
 
 

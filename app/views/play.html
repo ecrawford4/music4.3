@@ -44,7 +44,7 @@
             <div id="playBorder{{$index+1}}" class="thumbnail">
 
                 <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
+                    <h4 class="group inner list-group-item-heading" ng-style="getVoiceHeaderStyle($index)">
                         Voice {{$index + 1}}
                        Note Count: {{v.noteCount}}
                     </h4>
@@ -94,7 +94,12 @@
     </button>
     <br/><br/>
 
-    <div id="pitchDisplay">{{pitchDisplay}}</div>
+    <div id="pitchDisplay">
+        <div ng-repeat="v in allVoices track by $index" ng-style="getPitchDisplayStyle($index)">
+            <strong>Voice {{$index + 1}}:</strong>
+            <span>{{pitchDisplayByVoice[$index]}}</span>
+        </div>
+    </div>
 
     <md-content>
         <md-slider-container>

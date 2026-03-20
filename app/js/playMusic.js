@@ -5,8 +5,12 @@ var playbackState = {
     tempo: 120,
     voicesData: [],
     voiceStates: [],
-    scope: null
+    scope: null,
+    activeNoteByVoice: {},
+    activeVoicesByNote: {}
 };
+
+var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
 
 function playAll(allVoices, tempo, scope) {
     stopPlayback(scope); // reset any previous run
@@ -19,6 +23,8 @@ function playAll(allVoices, tempo, scope) {
     playbackState.voicesData = allVoices || [];
     playbackState.voiceStates = [];
     playbackState.scope = scope || null;
+    playbackState.activeNoteByVoice = {};
+    playbackState.activeVoicesByNote = {};
 
     var velocity = 127;
 
@@ -77,9 +83,8 @@ function scheduleNextNoteForVoice(voiceState, delayMs) {
         var noteIndex = voiceState.nextNoteIndex;
         var pitch = voiceState.notes[noteIndex];
 
-        unColorKeys();
-        colorKey(pitch, voiceState.voiceNo);
-        updatePitchDisplaySafe(playbackState.scope, pitch);
+        setVoiceActiveNote(voiceState.voiceNo, pitch);
+        updatePitchDisplaySafe(playbackState.scope, pitch, voiceState.voiceNo);
 
         MIDI.noteOn(voiceState.voiceNo, pitch + 20, voiceState.velocity, 0);
         MIDI.noteOff(voiceState.voiceNo, pitch + 20, 0);
@@ -88,6 +93,7 @@ function scheduleNextNoteForVoice(voiceState, delayMs) {
 
         if (voiceState.nextNoteIndex >= voiceState.notes.length) {
             voiceState.completed = true;
+            clearVoiceActiveNote(voiceState.voiceNo);
             finalizePlaybackIfFinished();
             return;
         }
@@ -123,6 +129,8 @@ function pausePlayback() {
     }
 
     silenceAllNotes();
+    clearAllVoiceHighlights();
+    unColorKeys();
 }
 
 function resumePlayback(allVoices, scope) {
@@ -155,6 +163,7 @@ function stopPlayback(scope) {
     playbackState.voicesData = [];
 
     silenceAllNotes();
+    clearAllVoiceHighlights();
 
     unColorKeys();
     if (targetScope && targetScope.clearPitchDisplay) {
@@ -197,6 +206,7 @@ function finalizePlaybackIfFinished() {
     playbackState.isPlaying = false;
     playbackState.isPaused = false;
     clearAllTimers();
+    clearAllVoiceHighlights();
     unColorKeys();
 }
 
@@ -235,11 +245,81 @@ function normalizeTempo(tempo) {
     return parsedTempo;
 }
 
-function updatePitchDisplaySafe(scope, pitch) {
+function updatePitchDisplaySafe(scope, pitch, voiceNo) {
     if (!scope || !scope.updatePitchDisplay) return;
     safeScopeInvoke(scope, function() {
-        scope.updatePitchDisplay(pitch);
+        scope.updatePitchDisplay(pitch, voiceNo);
     });
+}
+
+function setVoiceActiveNote(voiceNo, note) {
+    clearVoiceActiveNote(voiceNo);
+
+    if (typeof note !== "number" || note <= 0) {
+        return;
+    }
+
+    var keyId = String(note);
+    var activeVoiceList = playbackState.activeVoicesByNote[keyId] || [];
+    if (activeVoiceList.indexOf(voiceNo) === -1) {
+        activeVoiceList.push(voiceNo);
+    }
+
+    playbackState.activeVoicesByNote[keyId] = activeVoiceList;
+    playbackState.activeNoteByVoice[voiceNo] = keyId;
+    applyNoteColor(keyId);
+}
+
+function clearVoiceActiveNote(voiceNo) {
+    var keyId = playbackState.activeNoteByVoice[voiceNo];
+    if (!keyId) {
+        return;
+    }
+
+    delete playbackState.activeNoteByVoice[voiceNo];
+
+    var activeVoiceList = playbackState.activeVoicesByNote[keyId] || [];
+    for (var i = activeVoiceList.length - 1; i >= 0; i--) {
+        if (activeVoiceList[i] === voiceNo) {
+            activeVoiceList.splice(i, 1);
+        }
+    }
+
+    if (!activeVoiceList.length) {
+        delete playbackState.activeVoicesByNote[keyId];
+        resetSingleKeyColor(keyId);
+        return;
+    }
+
+    playbackState.activeVoicesByNote[keyId] = activeVoiceList;
+    applyNoteColor(keyId);
+}
+
+function clearAllVoiceHighlights() {
+    playbackState.activeNoteByVoice = {};
+    playbackState.activeVoicesByNote = {};
+}
+
+function applyNoteColor(keyId) {
+    var activeVoiceList = playbackState.activeVoicesByNote[keyId] || [];
+    if (!activeVoiceList.length) {
+        resetSingleKeyColor(keyId);
+        return;
+    }
+
+    var voiceNo = activeVoiceList[activeVoiceList.length - 1];
+    colorKey(parseInt(keyId, 10), voiceNo);
+}
+
+function resetSingleKeyColor(keyId) {
+    var keyElement = $("#" + keyId);
+    if (!keyElement.length) return;
+
+    if (keyElement.hasClass("keyBlack")) {
+        keyElement.css("background", "#000000");
+    } else {
+        keyElement.css("background", "#ffffff");
+    }
 }
 
 function safeScopeInvoke(scope, fn) {
@@ -262,14 +342,7 @@ function getDurationMappingScaleForTimeOut(durationMappingScale) {
 }
 
 function colorKey(note, voiceNo) {
-    if (voiceNo == 0)
-        $("#" + note).css("background", "#ee421f");
-    else if (voiceNo == 1)
-        $("#" + note).css("background", "#71ee13");
-    else if (voiceNo == 2)
-        $("#" + note).css("background", "#132cee");
-    else if (voiceNo == 3)
-        $("#" + note).css("background", "#ee19e4");
+    $("#" + note).css("background", getVoiceColorByIndex(voiceNo));
 }
 
 function unColorKeys() {
@@ -279,4 +352,12 @@ function unColorKeys() {
 
 function createKeyboard() {
     return true;
+}
+
+function getVoiceColorByIndex(voiceNo) {
+    if (typeof voiceNo !== "number") {
+        return voiceColors[0];
+    }
+
+    return voiceColors[voiceNo % voiceColors.length];
 }
