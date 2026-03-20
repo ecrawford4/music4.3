@@ -4,7 +4,7 @@ angular.module("myApp")
     .controller("pitchCtrl", function ($scope,$localStorage,$window,$http,
                                        GeneratingInputSetService,InputMapping,ConvertBiologySequence,
                                        Utility,FinalInputMapping,SharedData,
-                                       PlayMusic,DownloadMidiFact,DrawChart) {
+                                       PlayMusic,DownloadMidiFact) {
 
         //Default values
         $scope.selectedNumVoice = 1;
@@ -41,35 +41,93 @@ angular.module("myApp")
             };
         };
 
+        function getVoiceTemplate(usePrimaryDefaults) {
+            return {
+                selectedSet : usePrimaryDefaults ? "Integers" : "",
+                noteCount : 0,
+                pitchSequence : [],
+                pitchInput : [],
+                pitchInputTemp:[],
+                pitchInputFormatted: [],
+                selectedDurationSet : "",
+                durationSequence : [],
+                durationInput : [],
+                durationInputTemp:[],
+                durationInputFormatted: [],
+                pitchAlgorithm : usePrimaryDefaults ? "Division" : "",
+                pitchMinRange : 1,
+                pitchMaxRange : 88,
+                pitchMapping: [],
+                durationAlgorithm :"",
+                durationMinRange : 0,
+                durationMaxRange : 6,
+                durationMapping: [],
+                scaleOption :"",
+                keyOptionIndex:"",
+                scaleType: "scales",
+                morphSong: "",
+                morphPercent: 0,
+                morphPreview: [],
+                instrument:"",
+                muted : 0,
+                finalPitchMapping:[]
+            };
+        }
+
+        function ensureVoiceDefaults(voice, usePrimaryDefaults) {
+            var defaults = getVoiceTemplate(usePrimaryDefaults);
+            var output = voice || {};
+
+            for (var key in defaults) {
+                if (!defaults.hasOwnProperty(key)) continue;
+
+                if (typeof output[key] === "undefined" || output[key] === null) {
+                    if (Array.isArray(defaults[key])) {
+                        output[key] = defaults[key].slice();
+                    } else {
+                        output[key] = defaults[key];
+                    }
+                }
+            }
+
+            if (!Array.isArray(output.morphPreview)) {
+                output.morphPreview = [];
+            }
+
+            output.morphPercent = normalizeMorphPercent(output.morphPercent);
+            return output;
+        }
+
+        function normalizeAllVoices() {
+            if (!$scope.allVoices || !$scope.allVoices.length) {
+                $scope.allVoices = [getVoiceTemplate(true)];
+            }
+
+            for (var voiceIndex = 0; voiceIndex < $scope.allVoices.length; voiceIndex++) {
+                $scope.allVoices[voiceIndex] = ensureVoiceDefaults($scope.allVoices[voiceIndex], voiceIndex === 0);
+            }
+        }
+
+        function getPitchMappingForVoice(voice) {
+            if (!voice || !voice.pitchAlgorithm || typeof voice.pitchInput === "undefined" || voice.pitchInput === null || voice.pitchInput === "") {
+                return [];
+            }
+
+            return InputMapping.getMapping(voice.pitchInput, voice.pitchAlgorithm, voice.pitchMinRange, voice.pitchMaxRange);
+        }
+
+        function getDurationMappingForVoice(voice) {
+            if (!voice || !voice.durationAlgorithm || typeof voice.durationInput === "undefined" || voice.durationInput === null || voice.durationInput === "") {
+                return [];
+            }
+
+            return InputMapping.getMapping(voice.durationInput, voice.durationAlgorithm, voice.durationMinRange, voice.durationMaxRange);
+        }
+
         var voiceArray = [];
         for(var i = 0; i < $scope.selectedNumVoice ; i++)
         {
-            voiceArray.push(
-                {
-                    selectedSet : "Integers",
-                    noteCount : 0,
-                    pitchSequence : [],
-                    pitchInput : [],
-                    pitchInputTemp:[],
-                    selectedDurationSet : "",
-                    durationSequence : [],
-                    durationInput : [],
-                    durationInputTemp:[],
-                    pitchAlgorithm :"Division",
-                    pitchMinRange : 1,
-                    pitchMaxRange : 88,
-                    pitchMapping: [],
-                    durationAlgorithm :"",
-                    durationMinRange : 0,
-                    durationMaxRange : 6,
-                    durationMapping: [],
-                    scaleOption :"",
-                    keyOptionIndex:"",
-                    instrument:"",
-                    muted : 0,
-                    finalPitchMapping:[]
-                }
-            );
+            voiceArray.push(getVoiceTemplate(true));
         }
 
 
@@ -82,34 +140,11 @@ angular.module("myApp")
             //$window.alert("defined");
         }
 
+        normalizeAllVoices();
+
 
         $scope.addVoice = function () {
-            $scope.allVoices.push(
-                {
-                    selectedSet : "",
-                    noteCount : 0,
-                    pitchSequence : [],
-                    pitchInput : [],
-                    pitchInputTemp:[],
-                    selectedDurationSet : "",
-                    durationSequence : [],
-                    durationInput : [],
-                    durationInputTemp : [],
-                    pitchAlgorithm :"",
-                    pitchMinRange : 1,
-                    pitchMaxRange : 88,
-                    pitchMapping: [],
-                    durationAlgorithm :"",
-                    durationMinRange : 0,
-                    durationMaxRange : 6,
-                    durationMapping: [],
-                    scaleOption :"",
-                    keyOptionIndex:"",
-                    instrument:"",
-                    muted : 0,
-                    finalPitchMapping:[]
-                }
-            );
+            $scope.allVoices.push(getVoiceTemplate(false));
         }
 
         $scope.removeVoice = function (index) {
@@ -157,8 +192,18 @@ angular.module("myApp")
 
         $scope.noteCountChanged = function (index) {
             var obj = $scope.allVoices[index];
-            obj.pitchInput = GeneratingInputSetService.getSet(obj.selectedSet,obj.noteCount);
-            obj.pitchMapping = InputMapping.getMapping(obj.pitchInput,obj.pitchAlgorithm, obj.pitchMinRange,obj.pitchMaxRange);
+
+            if(obj.selectedSet === "DNA" || obj.selectedSet === "RNA" || obj.selectedSet === "Protein")
+            {
+                obj.pitchSequence = GeneratingInputSetService.getSet(obj.selectedSet,obj.noteCount);
+                obj.pitchInput = [];
+                obj.pitchMapping = [];
+            }
+            else
+            {
+                obj.pitchInput = GeneratingInputSetService.getSet(obj.selectedSet,obj.noteCount);
+                $scope.updatePitchMapping(index);
+            }
 
         }
 
@@ -185,7 +230,7 @@ angular.module("myApp")
             else
             {
                 obj.pitchInput = GeneratingInputSetService.getSet(obj.selectedSet,obj.noteCount);
-                obj.pitchMapping = InputMapping.getMapping(obj.pitchInput,obj.pitchAlgorithm, obj.pitchMinRange,obj.pitchMaxRange);
+                $scope.updatePitchMapping(index);
             }
         }
 
@@ -194,8 +239,12 @@ angular.module("myApp")
         $scope.updatePitchMapping = function (index) 
         {
             var obj = $scope.allVoices[index];
-            obj.pitchMapping = InputMapping.getMapping(obj.pitchInput,obj.pitchAlgorithm, obj.pitchMinRange,obj.pitchMaxRange);
+            obj.pitchMapping = getPitchMappingForVoice(obj);
             obj.noteCount = obj.pitchMapping.length;
+
+            if(obj.scaleType === "morph" && obj.morphSong) {
+                $scope.drawCurveTypes(index);
+            }
 
         }
 
@@ -218,7 +267,7 @@ angular.module("myApp")
             obj.pitchSequence = ConvertBiologySequence.convertInputFormat(obj.selectedSet,obj.pitchSequence);
             obj.pitchInput = ConvertBiologySequence.convert(obj.selectedSet,obj.pitchSequence,
                                                     nitrogenBases,bioType,$scope.proteinValues);//include convertBiologySequence.js
-            obj.noteCount = obj.pitchInput.length;
+            $scope.updatePitchMapping(index);
         }
 
 
@@ -226,6 +275,7 @@ angular.module("myApp")
             var obj = $scope.allVoices[index];
             obj.durationInput = ConvertBiologySequence.convert(obj.selectedDurationSet,obj.durationSequence,
                 durNitrogenBases,durBioType,$scope.proteinValues);//include convertBiologySequence.js
+            $scope.updateDurationMapping(index);
             //obj.noteCount = obj.pitchInput.length;
             if(durBioType == "codons")
             {
@@ -244,6 +294,7 @@ angular.module("myApp")
             var obj = $scope.allVoices[index];
             obj.durationInput = ConvertBiologySequence.convert(obj.selectedDurationSet,obj.durationSequence,
                                                     durNitrogenBases,durBioType,$scope.proteinValues);//include convertBiologySequence.js
+            $scope.updateDurationMapping(index);
             
             if(angular.equals(durBioType, "codons"))
             {
@@ -330,9 +381,9 @@ angular.module("myApp")
             {
                 if(obj.selectedDurationSet === "Protein")
                 {
-                    $scope.bioType = "";
+                    $scope.durBioType = "";
                 }else{
-                    $scope.bioType = "singleBases"; //set default value of biotype to "singleBases"
+                    $scope.durBioType = "singleBases"; //set default value of biotype to "singleBases"
                 }
 
                 obj.durationSequence = GeneratingInputSetService.getSet(obj.selectedDurationSet,obj.noteCount);
@@ -340,8 +391,7 @@ angular.module("myApp")
             else
             {
                 obj.durationInput = GeneratingInputSetService.getSet(obj.selectedDurationSet,obj.noteCount);
-                obj.durationMapping = InputMapping.getMapping(obj.durationInput,obj.durationAlgorithm,
-                    obj.durationMinRange,obj.durationMaxRange);
+                $scope.updateDurationMapping(index);
             }
 
 
@@ -350,7 +400,7 @@ angular.module("myApp")
         $scope.updateDurationMapping = function (index) {
 
             var obj = $scope.allVoices[index];
-            obj.durationMapping = InputMapping.getMapping(obj.durationInput,obj.durationAlgorithm, obj.durationMinRange,obj.durationMaxRange);
+            obj.durationMapping = getDurationMappingForVoice(obj);
 
 
         }
@@ -420,9 +470,8 @@ angular.module("myApp")
         {
             if ($window.confirm("Do you want to save the changes for voice " + (index+1) + "?") == true) {
                 var obj = $scope.allVoices[index];
-                obj.durationInput = obj.durationInputFormatted.slice();
-                obj.durationMapping = InputMapping.getMapping(obj.durationInput,obj.durationAlgorithm,
-                    obj.durationMinRange,obj.durationMaxRange);
+                obj.durationInput = obj.durationInputTemp.slice();
+                $scope.updateDurationMapping(index);
             }
         }
 
@@ -526,36 +575,12 @@ angular.module("myApp")
         $scope.resetData = function () {
             $window.alert("Reset");
             $scope.allVoices = [];
-            $scope.allVoices.push(
-                {
-                    selectedSet : "",
-                    noteCount : 0,
-                    pitchSequence : [],
-                    pitchInput : [],
-                    pitchInputTemp:[],
-                    selectedDurationSet : "",
-                    durationInput : [],
-                    pitchAlgorithm :"",
-                    pitchMinRange : 1,
-                    pitchMaxRange : 88,
-                    pitchMapping: [],
-                    durationAlgorithm :"",
-                    durationMinRange : 0,
-                    durationMaxRange : 6,
-                    durationMapping: [],
-                    scaleOption :"",
-                    keyOptionIndex:"",
-                    instrument:"",
-                    muted : 0,
-                    finalPitchMapping:[]
-                }
-            );
+            $scope.allVoices.push(getVoiceTemplate(false));
             $localStorage.allVoices = $scope.allVoices;
 
         }
 
         $scope.tempo = 100;
-        $scope.morphPercent = 0;
         $scope.morphPercent1 = 30;
 
         $scope.getProcessedInput = function (index,check,columnNo,decimalDigits) {
@@ -583,62 +608,112 @@ angular.module("myApp")
             $window.open('views/protein.html', "Window Name", "height=500,width=1200");
         }
 
-        $scope.checkMorph = function(index,morphPercent1)
-        {
-            var morphValues = [];
+        function normalizeMorphPercent(percent) {
+            var numericPercent = parseFloat(percent);
+            if (isNaN(numericPercent)) {
+                return 0;
+            }
+
+            if (numericPercent < 0) {
+                return 0;
+            }
+
+            if (numericPercent > 100) {
+                return 100;
+            }
+
+            return numericPercent;
+        }
+
+        function normalizeRangeValue(value, fallbackValue) {
+            var parsedValue = parseInt(value, 10);
+            return isNaN(parsedValue) ? fallbackValue : parsedValue;
+        }
+
+        function clampToPitchRange(value, minRange, maxRange) {
+            if (value < minRange) {
+                return minRange;
+            }
+
+            if (value > maxRange) {
+                return maxRange;
+            }
+
+            return value;
+        }
+
+        function getMorphReferenceValues(songName) {
+            if (songName === "beethoven") {
+                return $scope.beehthovenValues || [];
+            }
+
+            if (songName === "finlandia") {
+                return $scope.finlandValues || [];
+            }
+
+            return [];
+        }
+
+        function computeMorphData(index) {
             var obj = $scope.allVoices[index];
-            if(obj.songMorph == "beethoven")
-            {
-                morphValues = $scope.beehthovenValues;
+            if (!obj) {
+                return { preview: [], chartRows: [], songName: "Reference" };
             }
-            DrawChart.drawChart(index,obj.pitchMapping,obj.morphPercent,obj.songMorph,morphValues);
+
+            ensureVoiceDefaults(obj, index === 0);
+
+            var pitchMapping = Array.isArray(obj.pitchMapping) ? obj.pitchMapping : [];
+            var morphValues = getMorphReferenceValues(obj.morphSong);
+            var morphPercent = normalizeMorphPercent(obj.morphPercent);
+            var minRange = normalizeRangeValue(obj.pitchMinRange, 1);
+            var maxRange = normalizeRangeValue(obj.pitchMaxRange, 88);
+            if (minRange > maxRange) {
+                var swapped = minRange;
+                minRange = maxRange;
+                maxRange = swapped;
+            }
+
+            obj.morphPercent = morphPercent;
+
+            var maxLength = Math.min(pitchMapping.length, morphValues.length);
+            var preview = [];
+            var chartRows = [];
+
+            for (var i = 0; i < maxLength; i++) {
+                var sourceValue = parseInt(pitchMapping[i], 10);
+                var referenceValue = parseInt(morphValues[i], 10);
+
+                if (isNaN(sourceValue) || isNaN(referenceValue)) {
+                    continue;
+                }
+
+                var morphValue = Math.floor((referenceValue - sourceValue) * (morphPercent / 100) + sourceValue);
+                morphValue = clampToPitchRange(morphValue, minRange, maxRange);
+
+                preview.push(morphValue);
+                chartRows.push([i, morphValue, referenceValue]);
+            }
+
+            obj.morphPreview = preview;
+
+            return {
+                preview: preview,
+                chartRows: chartRows,
+                songName: obj.morphSong || "Reference"
+            };
         }
 
-
-        $scope.currentIndex = 0;
-
-
-        $scope.updatedCurrentIndex = function (index) {
-            $scope.currentIndex = parseInt(index);
-            $scope.songMorph = "";
-        }
-
-        $scope.drawCurveTypes =function (index) {
-            $scope.afterMorph = [];
-            var obj = $scope.allVoices[$scope.currentIndex];
-            var pitchMapping = obj.pitchMapping
-            console.log("index: "+$scope.currentIndex);
-            //$scope.currentIndex = parseInt(index);
-            var morphValues = [];
-            console.log("morph:" + $scope.songMorph);
-            console.log("pitch:" + obj.pitchMapping);
-            if($scope.songMorph == "beethoven")
-            {
-                morphValues = $scope.beehthovenValues;
-            }else if($scope.songMorph == "finlandia")
-            {
-                morphValues = $scope.finlandValues;
+        function drawMorphChart(chartRows, songName) {
+            if (typeof google === "undefined" || !google.visualization || !document.getElementById("chart_div")) {
+                return;
             }
+
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'X');
-            data.addColumn('number', 'Voice data');
-            data.addColumn('number', $scope.songMorph);
-            var mainA=[];
+            data.addColumn('number', 'Morphed Voice');
+            data.addColumn('number', songName);
+            data.addRows(chartRows);
 
-
-            for(var i = 0; i< pitchMapping.length; i++)
-            {
-                var arr=[];
-                arr.push(i);
-                var morphVal = Math.floor((parseInt(morphValues[i]) - parseInt(pitchMapping[i]))*($scope.morphPercent/100)
-                                + parseInt(pitchMapping[i]));
-                //arr.push((obj.pitchMapping[i]+$scope.currentIndex));
-                arr.push(morphVal);
-                arr.push(parseInt(morphValues[i]));
-                $scope.afterMorph.push(morphVal);
-                mainA.push(arr);
-            }
-            data.addRows(mainA);
             var options = {
                 hAxis: {
                     title: ''
@@ -651,20 +726,50 @@ angular.module("myApp")
                 }
             };
 
-
             var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(data, options);
         }
 
+        function applyMorphPreviewToVoice(index) {
+            var obj = $scope.allVoices[index];
+            if (!obj || !Array.isArray(obj.morphPreview) || !obj.morphPreview.length) {
+                return;
+            }
 
-        $scope.$watch('morphPercent', function(newValue, oldValue) {
+            obj.finalPitchMapping = obj.morphPreview.slice();
+        }
+
+        $scope.currentIndex = 0;
+
+        $scope.updatedCurrentIndex = function (index) {
+            $scope.currentIndex = parseInt(index, 10);
+
+            if (isNaN($scope.currentIndex) || !$scope.allVoices[$scope.currentIndex]) {
+                $scope.currentIndex = 0;
+            }
+
             $scope.drawCurveTypes($scope.currentIndex);
-        });
+        }
 
-        $scope.applyMorph = function () {
-            console.log("morph Applied");
-            var obj = $scope.allVoices[$scope.currentIndex];
-            obj.finalPitchMapping = $scope.afterMorph.slice();
+        $scope.drawCurveTypes =function (index) {
+            var voiceIndex = parseInt(index, 10);
+            if (isNaN(voiceIndex) || !$scope.allVoices[voiceIndex]) {
+                voiceIndex = $scope.currentIndex;
+            }
+
+            var morphData = computeMorphData(voiceIndex);
+            drawMorphChart(morphData.chartRows, morphData.songName);
+            applyMorphPreviewToVoice(voiceIndex);
+        }
+
+        $scope.applyMorph = function (index) {
+            var voiceIndex = parseInt(index, 10);
+            if (isNaN(voiceIndex) || !$scope.allVoices[voiceIndex]) {
+                voiceIndex = $scope.currentIndex;
+            }
+
+            $scope.drawCurveTypes(voiceIndex);
+            applyMorphPreviewToVoice(voiceIndex);
         }
 
         $scope.init = function () {
@@ -707,9 +812,11 @@ angular.module("myApp")
             if($scope.currentUtility == "pitch")
             {
                 obj.pitchInput = angular.copy(modalInputFormatted);
+                $scope.updatePitchMapping($scope.currentVoiceIndex);
 
             }else if ($scope.currentUtility == "duration"){
                 obj.durationInput = angular.copy(modalInputFormatted);
+                $scope.updateDurationMapping($scope.currentVoiceIndex);
             }
         }
 

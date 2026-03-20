@@ -95,8 +95,8 @@
 
                             <p>
                                 <label> Pitch input: </label>
-                                <textarea ng-show="v.selectedSet == 'Custom'" ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Please enter your own set of input..."></textarea>
-                                <textarea ng-hide="v.selectedSet == 'Custom'" ng-model="v.pitchInput" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
+                                <textarea ng-show="v.selectedSet == 'Custom'" ng-model="v.pitchInput" ng-change="updatePitchMapping($index)" class="form-control" rows="4" cols="50" placeholder="Please enter your own set of input..."></textarea>
+                                <textarea ng-hide="v.selectedSet == 'Custom'" ng-model="v.pitchInput" ng-change="updatePitchMapping($index)" class="form-control" rows="4" cols="50" placeholder="Input for  Pitch..."></textarea>
                             </p>
 
                             <!-- Trigger the modal with a button -->
@@ -116,11 +116,11 @@
                             <div class="form-inline">
                                 <div class="form-group">
                                     <label>Range &emsp;</label>
-                                    <input class="form-control" type="text" ng-model="v.pitchMinRange">
+                                    <input class="form-control" type="text" ng-model="v.pitchMinRange" ng-change="updatePitchMapping($index)">
                                 </div>
                                 <div class="form-group">
                                     <label>&emsp;&emsp;To &emsp;</label>
-                                    <input class="form-control" type="text" ng-model="v.pitchMaxRange">
+                                    <input class="form-control" type="text" ng-model="v.pitchMaxRange" ng-change="updatePitchMapping($index)">
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-link tooltip-right" data-toggle="tooltip" data-original-title="{{pitchRangeTooltip}}" data-placement="right">

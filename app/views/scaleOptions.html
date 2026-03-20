@@ -34,7 +34,6 @@
                                     <label> Using: </label>
                                     <select class="form-control"
                                             ng-model="v.scaleType"
-                                            ng-init="v.scaleType='scales'"
                                             ng-change="updatedCurrentIndex($index)">
                                         <option value="scales">Scale</option>
                                         <option value="morph">Morph</option>
@@ -66,7 +65,7 @@
                             </div>
                             <div ng-if="v.scaleType == 'morph'" id="morph">
                                 <!-- Trigger the modal with a button -->
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal">
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal" ng-click="updatedCurrentIndex($index)">
                                     <span class="glyphicon glyphicon-folder-open"></span> Open Morph
                                 </button>
                             </div>
@@ -96,21 +95,21 @@
                 </div>
                 <div class="modal-body">
                     <!-- <button ng-click="drawCurveTypes(selectIn)">Open chart</button> -->
-                    <select class="form-control" ng-model="songMorph" ng-change="drawCurveTypes(selectIn)">
+                    <select class="form-control" ng-model="allVoices[currentIndex].morphSong" ng-change="drawCurveTypes(currentIndex)">
                         <option value="">--Select Song--</option>
                         <option value="beethoven">Beethoven's 9th</option>
                         <option value="finlandia">Sibelius' Finlandia</option>
                     </select>
 
-                    <div ng-show="songMorph == 'beethoven' || songMorph == 'finlandia'">
+                    <div ng-show="allVoices[currentIndex].morphSong == 'beethoven' || allVoices[currentIndex].morphSong == 'finlandia'">
                         <!-- Slider for morph -->
                         <md-content>
                             <md-slider-container>
                                 <span>Morph: </span>
-                                <md-slider flex min="0" max="100" ng-model="morphPercent" aria-label="red" id="red-slider">
+                                <md-slider flex min="0" max="100" ng-model="allVoices[currentIndex].morphPercent" ng-change="drawCurveTypes(currentIndex)" aria-label="red" id="red-slider">
                                 </md-slider>
                                 <md-input-container>
-                                    <input flex type="number" ng-model="morphPercent" aria-label="red" aria-controls="red-slider">
+                                    <input flex type="number" ng-model="allVoices[currentIndex].morphPercent" ng-change="drawCurveTypes(currentIndex)" aria-label="red" aria-controls="red-slider">
                                 </md-input-container>
                             </md-slider-container>
                         </md-content>
@@ -120,14 +119,14 @@
                         <!--{{afterMorph}} -->
                         <p>
                             Pitch mapping :
-                            <textarea ng-model="afterMorph" class="form-control"  rows="4" cols="115" readonly></textarea>
+                            <textarea ng-model="allVoices[currentIndex].morphPreview" class="form-control"  rows="4" cols="115" readonly></textarea>
                         </p>
 
                     </div>
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="applyMorph()">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="applyMorph(currentIndex)">
                         <span class="glyphicon glyphicon-ok"></span> Apply
                     </button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">
