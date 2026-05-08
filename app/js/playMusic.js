@@ -52,7 +52,8 @@ function playAll(allVoices, tempo, scope) {
             nextDueAt: 0,
             waitUntilNextMs: 0,
             velocity: velocity,
-            completed: false
+            completed: false,
+            lastPitch: null
         };
 
         playbackState.voiceStates.push(voiceState);
@@ -83,23 +84,34 @@ function scheduleNextNoteForVoice(voiceState, delayMs) {
         var noteIndex = voiceState.nextNoteIndex;
         var pitch = voiceState.notes[noteIndex];
 
+        // Sustain: turn off the previous note in this voice just before starting the new one
+        if (typeof voiceState.lastPitch === "number") {
+            MIDI.noteOff(voiceState.voiceNo, voiceState.lastPitch + 20, 0);
+        }
+
         setVoiceActiveNote(voiceState.voiceNo, pitch);
         updatePitchDisplaySafe(playbackState.scope, pitch, voiceState.voiceNo);
 
         MIDI.noteOn(voiceState.voiceNo, pitch + 20, voiceState.velocity, 0);
-        MIDI.noteOff(voiceState.voiceNo, pitch + 20, 0);
+        voiceState.lastPitch = pitch;
 
         voiceState.nextNoteIndex = noteIndex + 1;
 
+        var durationValue = voiceState.durationScale[noteIndex];
+        var nextDelayMs = getDelayMsFromDuration(durationValue, playbackState.tempo);
+
         if (voiceState.nextNoteIndex >= voiceState.notes.length) {
             voiceState.completed = true;
-            clearVoiceActiveNote(voiceState.voiceNo);
+            // Schedule noteOff for the final note after its duration elapses
+            (function(voiceNo, lastPitch, delay) {
+                setTimeout(function() {
+                    MIDI.noteOff(voiceNo, lastPitch + 20, 0);
+                    clearVoiceActiveNote(voiceNo);
+                }, delay);
+            })(voiceState.voiceNo, pitch, nextDelayMs);
             finalizePlaybackIfFinished();
             return;
         }
-
-        var durationValue = voiceState.durationScale[noteIndex];
-        var nextDelayMs = getDelayMsFromDuration(durationValue, playbackState.tempo);
 
         voiceState.waitUntilNextMs = nextDelayMs;
         scheduleNextNoteForVoice(voiceState, nextDelayMs);
