@@ -1,22 +1,30 @@
 <?php
-if (isset($_POST['notedata'])){
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit('Method Not Allowed');
+}
 
-    require('./midi.class.php');
+if (!isset($_POST['notedata']) || $_POST['notedata'] === '') {
+    http_response_code(400);
+    exit('Missing notedata');
+}
 
-    $txt = $_POST['notedata'];
-    //echo $txt;
-    //echo '\r\n \r\n';
+$midiClassPath = __DIR__ . '/midi.class.php';
+if (!is_file($midiClassPath)) {
+    http_response_code(500);
+    exit('MIDI library missing');
+}
+
+require_once $midiClassPath;
+
+try {
+    $txt = (string) $_POST['notedata'];
     $midi = new Midi();
-    //echo "midi made";
-
     $midi->importTxt($txt);
-    //echo $midi->getTrackCount();
-    $destFilename  = 'output3A.mid';
-    //echo $destFilename;
-
-    ///$tracks=$midi->tracks();
-    //echo base64_encode($midi->getMid());
-    $midi->downloadMidFile($destFilename); //not from a midi file
-
+    $destFilename = 'output3A.mid';
+    $midi->downloadMidFile($destFilename);
+} catch (Exception $e) {
+    http_response_code(500);
+    exit('Failed to create MIDI');
 }
 ?>
