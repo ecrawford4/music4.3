@@ -7,7 +7,7 @@
     //@$pass = $request->pass;
 
 
-    require('./midi.class.php');
+    require(__DIR__ . '/midi.class.php');
 
     //echo $txt;
     //echo '\r\n \r\n';
