@@ -8,7 +8,7 @@ angular.module("myApp")
 
         //Default values
         $scope.selectedNumVoice = 1;
-        var voiceColors = ["#98C8EB", "#60A79B", "#34743F", "#332282", "#DBCC83", "#9A9846", "#BF6C79", "#7E2855", "#9D4994", "#DFDCDE"];
+        var voiceColors = ["#88CCEF", "#44AA9A", "#117737", "#342288", "#DDCC77", "#999934", "#CC6777", "#882355", "#AA4599", "#DDDDDD"];
         // Share voice colors with playback keyboard highlighting.
         window.musicVoiceColors = voiceColors;
 
@@ -202,6 +202,20 @@ angular.module("myApp")
 
         $scope.noteCountChanged = function (index) {
             var obj = $scope.allVoices[index];
+            var parsedNoteCount = parseInt(obj.noteCount, 10);
+
+            if (isNaN(parsedNoteCount) || parsedNoteCount < 0) {
+                parsedNoteCount = 0;
+            }
+
+            obj.noteCount = parsedNoteCount;
+
+            // Wait until a set is chosen for newly added voices.
+            if (!obj.selectedSet) {
+                obj.pitchInput = [];
+                obj.pitchMapping = [];
+                return;
+            }
 
             if(obj.selectedSet === "DNA" || obj.selectedSet === "RNA" || obj.selectedSet === "Protein")
             {
@@ -250,7 +264,10 @@ angular.module("myApp")
         {
             var obj = $scope.allVoices[index];
             obj.pitchMapping = getPitchMappingForVoice(obj);
-            obj.noteCount = obj.pitchMapping.length;
+            // Keep user-entered note count while algorithm is not selected yet.
+            if (obj.pitchAlgorithm) {
+                obj.noteCount = obj.pitchMapping.length;
+            }
 
             if(obj.scaleType === "morph" && obj.morphSong) {
                 $scope.drawCurveTypes(index);
