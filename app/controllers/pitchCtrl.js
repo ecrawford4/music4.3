@@ -19,31 +19,35 @@ angular.module("myApp")
             return voiceColors[index % voiceColors.length];
         };
 
-        $scope.getVoiceTextColor = function() {
-            return "#1f2933";
+        $scope.getVoiceTextColor = function(index) {
+            var hexColor = $scope.getVoiceColor(index).replace("#", "");
+            var red = parseInt(hexColor.substring(0, 2), 16);
+            var green = parseInt(hexColor.substring(2, 4), 16);
+            var blue = parseInt(hexColor.substring(4, 6), 16);
+            var brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+
+            return brightness >= 155 ? "#1f2933" : "#ffffff";
         };
 
         $scope.getVoiceHeaderStyle = function(index) {
             return {
-                "background": "#ffffff",
+                "background": $scope.getVoiceColor(index),
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
                 "margin-top": "0",
-                "border": "1px solid #d9dee5",
-                "border-left": "6px solid " + $scope.getVoiceColor(index)
+                "border": "1px solid rgba(31, 41, 51, 0.18)"
             };
         };
 
         $scope.getPitchDisplayStyle = function(index) {
             return {
-                "background": "#ffffff",
+                "background": $scope.getVoiceColor(index),
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
                 "margin-bottom": "6px",
-                "border": "1px solid #d9dee5",
-                "border-left": "6px solid " + $scope.getVoiceColor(index)
+                "border": "1px solid rgba(31, 41, 51, 0.18)"
             };
         };
 
