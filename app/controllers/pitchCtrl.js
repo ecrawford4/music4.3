@@ -8,7 +8,7 @@ angular.module("myApp")
 
         //Default values
         $scope.selectedNumVoice = 1;
-        var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+        var voiceColors = ["#d59a8c", "#bed5a3", "#a8b9d8", "#d0b2d6", "#d9c29a", "#9fc8cf", "#b4aed8", "#d8adb9"];
 
         $scope.getVoiceColor = function(index) {
             if (typeof index !== "number") {
