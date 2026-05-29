@@ -9,6 +9,8 @@ angular.module("myApp")
         //Default values
         $scope.selectedNumVoice = 1;
         var voiceColors = ["#d59a8c", "#bed5a3", "#a8b9d8", "#d0b2d6", "#d9c29a", "#9fc8cf", "#b4aed8", "#d8adb9"];
+        // Share voice colors with playback keyboard highlighting.
+        window.musicVoiceColors = voiceColors;
 
         $scope.getVoiceColor = function(index) {
             if (typeof index !== "number") {
