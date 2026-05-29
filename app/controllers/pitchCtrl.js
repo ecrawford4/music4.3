@@ -8,7 +8,7 @@ angular.module("myApp")
 
         //Default values
         $scope.selectedNumVoice = 1;
-        var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+        var voiceColors = ["#d59a8c", "#bed5a3", "#a8b9d8", "#d0b2d6", "#d9c29a", "#9fc8cf", "#b4aed8", "#d8adb9"];
 
         $scope.getVoiceColor = function(index) {
             if (typeof index !== "number") {
@@ -17,8 +17,8 @@ angular.module("myApp")
             return voiceColors[index % voiceColors.length];
         };
 
-        $scope.getVoiceTextColor = function(index) {
-            return index % voiceColors.length === 1 ? "#111111" : "#ffffff";
+        $scope.getVoiceTextColor = function() {
+            return "#1f2933";
         };
 
         $scope.getVoiceHeaderStyle = function(index) {
@@ -27,7 +27,8 @@ angular.module("myApp")
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-top": "0"
+                "margin-top": "0",
+                "border": "1px solid rgba(31, 41, 51, 0.15)"
             };
         };
 
@@ -37,7 +38,8 @@ angular.module("myApp")
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-bottom": "6px"
+                "margin-bottom": "6px",
+                "border": "1px solid rgba(31, 41, 51, 0.15)"
             };
         };
 
