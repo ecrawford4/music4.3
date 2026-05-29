@@ -17,27 +17,31 @@ angular.module("myApp")
             return voiceColors[index % voiceColors.length];
         };
 
-        $scope.getVoiceTextColor = function(index) {
-            return index % voiceColors.length === 1 ? "#111111" : "#ffffff";
+        $scope.getVoiceTextColor = function() {
+            return "#1f2933";
         };
 
         $scope.getVoiceHeaderStyle = function(index) {
             return {
-                "background": $scope.getVoiceColor(index),
+                "background": "#ffffff",
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-top": "0"
+                "margin-top": "0",
+                "border": "1px solid #d9dee5",
+                "border-left": "6px solid " + $scope.getVoiceColor(index)
             };
         };
 
         $scope.getPitchDisplayStyle = function(index) {
             return {
-                "background": $scope.getVoiceColor(index),
+                "background": "#ffffff",
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-bottom": "6px"
+                "margin-bottom": "6px",
+                "border": "1px solid #d9dee5",
+                "border-left": "6px solid " + $scope.getVoiceColor(index)
             };
         };
 
