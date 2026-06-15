@@ -232,7 +232,9 @@ angular.module("myApp")
         }
 
         $scope.updateVersion = function (link) {
-            //window.location.href = link;
+            if (!link) {
+                return;
+            }
             window.open(link, '_blank');
         }
         $scope.updateInputSet = function (index) {
