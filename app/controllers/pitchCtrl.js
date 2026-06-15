@@ -8,7 +8,23 @@ angular.module("myApp")
 
         //Default values
         $scope.selectedNumVoice = 1;
-        var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+        var voiceColors = ["#88CCEF", "#44AA9A", "#117737", "#342288", "#DDCC77", "#999934", "#CC6777", "#882355", "#AA4599", "#DDDDDD"];
+        
+        // Shuffle the colors array using Fisher-Yates algorithm
+        function shuffleColors(colors) {
+            var shuffled = colors.slice(); // Create a copy
+            for (var i = shuffled.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = shuffled[i];
+                shuffled[i] = shuffled[j];
+                shuffled[j] = temp;
+            }
+            return shuffled;
+        }
+        
+        voiceColors = shuffleColors(voiceColors);
+        // Share voice colors with playback keyboard highlighting.
+        window.musicVoiceColors = voiceColors;
 
         $scope.getVoiceColor = function(index) {
             if (typeof index !== "number") {
@@ -18,7 +34,13 @@ angular.module("myApp")
         };
 
         $scope.getVoiceTextColor = function(index) {
-            return index % voiceColors.length === 1 ? "#111111" : "#ffffff";
+            var hexColor = $scope.getVoiceColor(index).replace("#", "");
+            var red = parseInt(hexColor.substring(0, 2), 16);
+            var green = parseInt(hexColor.substring(2, 4), 16);
+            var blue = parseInt(hexColor.substring(4, 6), 16);
+            var brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+
+            return brightness >= 155 ? "#1f2933" : "#ffffff";
         };
 
         $scope.getVoiceHeaderStyle = function(index) {
@@ -27,7 +49,8 @@ angular.module("myApp")
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-top": "0"
+                "margin-top": "0",
+                "border": "1px solid rgba(31, 41, 51, 0.18)"
             };
         };
 
@@ -37,7 +60,8 @@ angular.module("myApp")
                 "color": $scope.getVoiceTextColor(index),
                 "padding": "8px 10px",
                 "border-radius": "4px",
-                "margin-bottom": "6px"
+                "margin-bottom": "6px",
+                "border": "1px solid rgba(31, 41, 51, 0.18)"
             };
         };
 
@@ -192,6 +216,20 @@ angular.module("myApp")
 
         $scope.noteCountChanged = function (index) {
             var obj = $scope.allVoices[index];
+            var parsedNoteCount = parseInt(obj.noteCount, 10);
+
+            if (isNaN(parsedNoteCount) || parsedNoteCount < 0) {
+                parsedNoteCount = 0;
+            }
+
+            obj.noteCount = parsedNoteCount;
+
+            // Wait until a set is chosen for newly added voices.
+            if (!obj.selectedSet) {
+                obj.pitchInput = [];
+                obj.pitchMapping = [];
+                return;
+            }
 
             if(obj.selectedSet === "DNA" || obj.selectedSet === "RNA" || obj.selectedSet === "Protein")
             {
@@ -208,7 +246,9 @@ angular.module("myApp")
         }
 
         $scope.updateVersion = function (link) {
-            //window.location.href = link;
+            if (!link) {
+                return;
+            }
             window.open(link, '_blank');
         }
         $scope.updateInputSet = function (index) {
@@ -240,7 +280,10 @@ angular.module("myApp")
         {
             var obj = $scope.allVoices[index];
             obj.pitchMapping = getPitchMappingForVoice(obj);
-            obj.noteCount = obj.pitchMapping.length;
+            // Keep user-entered note count while algorithm is not selected yet.
+            if (obj.pitchAlgorithm) {
+                obj.noteCount = obj.pitchMapping.length;
+            }
 
             if(obj.scaleType === "morph" && obj.morphSong) {
                 $scope.drawCurveTypes(index);

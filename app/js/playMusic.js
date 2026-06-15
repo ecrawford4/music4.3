@@ -10,7 +10,14 @@ var playbackState = {
     activeVoicesByNote: {}
 };
 
-var voiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+var fallbackVoiceColors = ["#ee421f", "#71ee13", "#132cee", "#ee19e4", "#f5a623", "#1fbad6", "#7b61ff", "#ff6f91"];
+
+function getVoiceColors() {
+    if (window.musicVoiceColors && window.musicVoiceColors.length) {
+        return window.musicVoiceColors;
+    }
+    return fallbackVoiceColors;
+}
 
 function playAll(allVoices, tempo, scope) {
     stopPlayback(scope); // reset any previous run
@@ -367,6 +374,7 @@ function createKeyboard() {
 }
 
 function getVoiceColorByIndex(voiceNo) {
+    var voiceColors = getVoiceColors();
     if (typeof voiceNo !== "number") {
         return voiceColors[0];
     }

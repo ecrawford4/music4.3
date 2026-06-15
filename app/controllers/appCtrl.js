@@ -125,11 +125,12 @@ angular.module("myApp")
         ];
 
         $scope.previousVersions = [
-            {name : "Previous Version", link : ""},
-            {name : "Version 3.2", link : "http://musicalgorithms.org/3.2"},
-            {name : "Version 3.1", link : "http://musicalgorithms.org/3.1"},
-            {name : "Version 3.0", link : "http://musicalgorithms.org/3.0"},
-            {name : "Version 1.0", link : "http://musicalgorithms.org/1.0"}
+            {name : "Version 4.2.5", link : ""},
+            {name : "Version 4.1", link : "https://legacy.musicalgorithms.org/4.1/app/"},
+            {name : "Version 3.2", link : "https://legacy.musicalgorithms.org/3.2"},
+            {name : "Version 3.1", link : "https://legacy.musicalgorithms.org/3.1"},
+            {name : "Version 3.0", link : "https://legacy.musicalgorithms.org/3.0"},
+            {name : "Version 1.0", link : "https://legacy.musicalgorithms.org/1.0"}
         ];
 
         $scope.prevLink = $scope.previousVersions[0]; // this line initializes the drop down menu

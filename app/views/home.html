@@ -18,6 +18,7 @@
             </p>
 
             <!-- Select drop down for previous versions -->
+                <h5><i>Select Version:</i></h5>
             <select ng-model="prevLink"
                     ng-change="updateVersion(prevLink.link)"
                     ng-options = "x.name for x in previousVersions">
