@@ -9,6 +9,20 @@ angular.module("myApp")
         //Default values
         $scope.selectedNumVoice = 1;
         var voiceColors = ["#88CCEF", "#44AA9A", "#117737", "#342288", "#DDCC77", "#999934", "#CC6777", "#882355", "#AA4599", "#DDDDDD"];
+        
+        // Shuffle the colors array using Fisher-Yates algorithm
+        function shuffleColors(colors) {
+            var shuffled = colors.slice(); // Create a copy
+            for (var i = shuffled.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = shuffled[i];
+                shuffled[i] = shuffled[j];
+                shuffled[j] = temp;
+            }
+            return shuffled;
+        }
+        
+        voiceColors = shuffleColors(voiceColors);
         // Share voice colors with playback keyboard highlighting.
         window.musicVoiceColors = voiceColors;
 
